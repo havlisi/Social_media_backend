@@ -1,6 +1,5 @@
 package com.example.demo.entities.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -8,7 +7,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import com.example.demo.entities.PostEntity;
 import com.example.demo.entities.UserEntity;
@@ -38,11 +36,9 @@ public class UserEntityDTO {
 	private String email;
 	
 	@NotNull(message = "Password must be provided.")
-	@Size(min = 5, message = "Password must be minimum "
-			+ "{min} characters long.")
-	
+	@Size(min = 5, message = "Password must be minimum "+ "{min} characters long.")
 	@JsonIgnore
-//	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
+//	@Pattern(regexp = "(?=.*?[#?!@$%^&*-\]\[])", message = "Password must include at least one special character")
 	private String password;
 	
 	@JsonIgnore
@@ -65,6 +61,7 @@ public class UserEntityDTO {
 		this.lastName = u.getLastName();
 		this.email = u.getEmail();
 		this.password = u.getPassword();
+		this.confirmed_password = u.getConfirmed_password();
 		this.firstName = u.getFirstName();
 		this.role = u.getRole();
 	}

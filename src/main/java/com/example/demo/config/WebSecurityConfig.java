@@ -42,7 +42,7 @@ public class WebSecurityConfig {
 				.addFilterAfter(new JWTAuthorizationFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/regularUser").permitAll()
 				.anyRequest().authenticated();
 		return http.build();
 	}

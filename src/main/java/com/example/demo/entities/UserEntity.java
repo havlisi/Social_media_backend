@@ -53,12 +53,14 @@ public class UserEntity {
 	private String email;
 	
 	@NotNull(message = "Password must be provided.")
-	@Size(min = 5, message = "Password must be minimum "
-			+ "{min} characters long.")
-	
+	@Size(min = 5, message = "Password must be minimum "+ "{min} characters long.")
 	@JsonIgnore
 //	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
 	private String password;
+	
+	@JsonIgnore
+//	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
+	private String confirmed_password;
 	
 	@Column(nullable = false)
 	private String role;
@@ -76,8 +78,8 @@ public class UserEntity {
 			@NotNull(message = "Last name must be provided.") @Size(min = 2, max = 30, message = "Last name must be between {min} and {max} characters long.") String lastName,
 			@NotNull(message = "Username must be provided.") @Size(min = 5, max = 25, message = "Username must be between {min} and {max} characters long.") String username,
 			@NotNull(message = "Please provide email address.") @Email(message = "Email is not valid.") String email,
-			@NotNull(message = "Password must be provided.") @Size(min = 5, message = "Password must be minimum {min} characters long.")	String password,
-			String role, List<PostEntity> posts) {
+			@NotNull(message = "Password must be provided.") @Size(min = 5, message = "Password must be minimum {min} characters long.") String password,
+			String confirmed_password, String role, List<PostEntity> posts) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -85,6 +87,7 @@ public class UserEntity {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.confirmed_password = confirmed_password;
 		this.role = role;
 		this.posts = posts;
 	}
@@ -135,6 +138,14 @@ public class UserEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getConfirmed_password() {
+		return confirmed_password;
+	}
+
+	public void setConfirmed_password(String confirmed_password) {
+		this.confirmed_password = confirmed_password;
 	}
 
 	public String getRole() {
