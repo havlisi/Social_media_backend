@@ -1,12 +1,15 @@
 package com.example.demo.entities.dto;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.PostEntity;
+import com.example.demo.entities.RegularUserEntity;
 
-public class UserEntityDTO {
+public class RegularUserEntityDTO {
 	
 	private Integer id;
 	
@@ -41,10 +44,13 @@ public class UserEntityDTO {
 	@Column(nullable = false)
 	private String role;
 	
-	public UserEntityDTO() {
+	@Column
+	private List<PostEntity> posts;
+	
+	public RegularUserEntityDTO() {
 	}
 
-	public UserEntityDTO(UserEntity u) {
+	public RegularUserEntityDTO(RegularUserEntity u) {
 		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();
@@ -53,6 +59,10 @@ public class UserEntityDTO {
 		this.confirmed_password = u.getConfirmed_password();
 		this.firstName = u.getFirstName();
 		this.role = u.getRole();
+		List<PostEntity> posts = new ArrayList<>();
+		for (PostEntity post : u.getPosts()) {
+			posts.add(post);
+		}
 	}
 
 	public Integer getId() {
@@ -109,6 +119,14 @@ public class UserEntityDTO {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public List<PostEntity> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<PostEntity> posts) {
+		this.posts = posts;
 	}
 
 	public String getConfirmed_password() {

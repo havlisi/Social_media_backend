@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entities.RegularUserEntity;
 import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.dto.RegularUserEntityDTO;
 import com.example.demo.entities.dto.UserEntityDTO;
 import com.example.demo.repositories.RegularUserRepository;
 import com.example.demo.repositories.UserRepository;
@@ -25,6 +27,9 @@ public class RegularUserController {
 	
 	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() {
@@ -45,7 +50,7 @@ public class RegularUserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST) 
-	public ResponseEntity<?> createRegularUser (@RequestBody UserEntityDTO newUser) {
+	public ResponseEntity<?> createRegularUser (@RequestBody RegularUserEntityDTO newUser) {
 		
 		RegularUserEntity user = new RegularUserEntity();
 		
@@ -81,9 +86,7 @@ public class RegularUserController {
 			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
 		}
 		
-		user.setPassword(newUser.getPassword());
-		
-		//dodati posts
+		user.setPassword((passwordEncoder.encode(newUser.getPassword())));
 		
 		userRepository.save(user);
 		
@@ -91,7 +94,7 @@ public class RegularUserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/{id}") 
-	public ResponseEntity<?> updateRegularUser (@RequestBody UserEntityDTO updatedUser, @PathVariable Integer id) {
+	public ResponseEntity<?> updateRegularUser (@RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id) {
 		
 		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
 		
@@ -114,8 +117,6 @@ public class RegularUserController {
 		
 		user.get().setEmail(updatedUser.getEmail());
 		
-		user.get().setRole("ROLE_REGULAR_USER");
-		
 		System.out.println(updatedUser.getFirstName());
 		System.out.println(updatedUser.getLastName());
 		System.out.println(updatedUser.getUsername());
@@ -128,8 +129,6 @@ public class RegularUserController {
 		}
 		
 		user.get().setPassword(updatedUser.getPassword());
-		
-		//dodati posts
 		
 		userRepository.save(user.get());
 		
