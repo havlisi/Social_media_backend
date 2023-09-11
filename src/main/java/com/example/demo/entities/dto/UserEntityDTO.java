@@ -56,12 +56,13 @@ public class UserEntityDTO {
 	private List<PostEntity> posts;
 
 	public UserEntityDTO(UserEntity u) {
+		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();
 		this.email = u.getEmail();
 		this.password = u.getPassword();
 		this.firstName = u.getFirstName();
-
+		this.role = u.getRole();
 	}
 
 	public Integer getId() {
@@ -126,5 +127,13 @@ public class UserEntityDTO {
 
 	public void setPosts(List<PostEntity> posts) {
 		this.posts = posts;
+	}
+
+	public String getConfirmed_password() {
+		return confirmed_password;
+	}
+
+	public void setConfirmed_password(String confirmed_password) {
+		this.confirmed_password = confirmed_password;
 	}
 }
