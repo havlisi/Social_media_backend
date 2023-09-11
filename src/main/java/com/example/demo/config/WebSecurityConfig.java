@@ -43,6 +43,7 @@ public class WebSecurityConfig {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/v1/regularUser").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/admin").permitAll()
 				.anyRequest().authenticated();
 		return http.build();
 	}

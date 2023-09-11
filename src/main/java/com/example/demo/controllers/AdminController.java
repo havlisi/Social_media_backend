@@ -5,15 +5,16 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.entities.RegularUserEntity;
+import com.example.demo.entities.AdminEntity;
 import com.example.demo.entities.UserEntity;
 import com.example.demo.entities.dto.UserEntityDTO;
-import com.example.demo.repositories.RegularUserRepository;
+import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.UserRepository;
 
 @RestController
@@ -21,36 +22,39 @@ import com.example.demo.repositories.UserRepository;
 public class AdminController {
 	
 	@Autowired
-	RegularUserRepository regularUserRepository;
+	AdminRepository adminRepository;
 	
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() {
-		List<RegularUserEntity> users = (List<RegularUserEntity>) regularUserRepository.findAll();
-		if (users.isEmpty()) {
-			return new ResponseEntity<>("No users found", HttpStatus.NOT_FOUND);
+		List<AdminEntity> admins = (List<AdminEntity>) adminRepository.findAll();
+		if (admins.isEmpty()) {
+			return new ResponseEntity<>("No admin users found", HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(users, HttpStatus.OK);
+		return new ResponseEntity<>(admins, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable Integer id) {
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
-		if (user.isEmpty()) {
-			return new ResponseEntity<>("User with that id not found", HttpStatus.NOT_FOUND);
+		Optional<AdminEntity> admin = adminRepository.findById(id);
+		if (admin.isEmpty()) {
+			return new ResponseEntity<>("Admin with that id not found", HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(user, HttpStatus.OK);
+		return new ResponseEntity<>(admin, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST) 
-	public ResponseEntity<?> createRegularUser (@RequestBody UserEntityDTO newUser) {
+	public ResponseEntity<?> createAdmin (@RequestBody UserEntityDTO newUser) {
 		
-		RegularUserEntity user = new RegularUserEntity();
+		AdminEntity admin = new AdminEntity();
 		
-		user.setFirstName(newUser.getFirstName());
-		user.setLastName(newUser.getLastName());
+		admin.setFirstName(newUser.getFirstName());
+		admin.setLastName(newUser.getLastName());
 		
 		UserEntity existingUsername = userRepository.findByUsername(newUser.getUsername());
 		
@@ -58,7 +62,7 @@ public class AdminController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
-		user.setUsername(newUser.getUsername());
+		admin.setUsername(newUser.getUsername());
 		
 		UserEntity existingEmailUser = userRepository.findByEmail(newUser.getEmail());
 		
@@ -66,9 +70,9 @@ public class AdminController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
-		user.setEmail(newUser.getEmail());
+		admin.setEmail(newUser.getEmail());
 		
-		user.setRole("ROLE_REGULAR_USER");
+		admin.setRole("ROLE_ADMIN");
 		
 		System.out.println(newUser.getFirstName());
 		System.out.println(newUser.getLastName());
@@ -81,22 +85,20 @@ public class AdminController {
 			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
 		}
 		
-		user.setPassword(newUser.getPassword());
+		admin.setPassword((passwordEncoder.encode(newUser.getPassword())));
 		
-		//dodati posts
+		adminRepository.save(admin);
 		
-		userRepository.save(user);
-		
-		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user), HttpStatus.CREATED);
+		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin), HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/{id}") 
 	public ResponseEntity<?> updateRegularUser (@RequestBody UserEntityDTO updatedUser, @PathVariable Integer id) {
 		
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
+		Optional<AdminEntity> admin = adminRepository.findById(id);
 		
-		user.get().setFirstName(updatedUser.getFirstName());
-		user.get().setLastName(updatedUser.getLastName());
+		admin.get().setFirstName(updatedUser.getFirstName());
+		admin.get().setLastName(updatedUser.getLastName());
 		
 		UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
 		
@@ -104,7 +106,7 @@ public class AdminController {
 			return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
 		}
 		
-		user.get().setUsername(updatedUser.getUsername());
+		admin.get().setUsername(updatedUser.getUsername());
 		
 		UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
 		
@@ -112,9 +114,7 @@ public class AdminController {
 			return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
 		}
 		
-		user.get().setEmail(updatedUser.getEmail());
-		
-		user.get().setRole("ROLE_REGULAR_USER");
+		admin.get().setEmail(updatedUser.getEmail());
 		
 		System.out.println(updatedUser.getFirstName());
 		System.out.println(updatedUser.getLastName());
@@ -127,24 +127,22 @@ public class AdminController {
 			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
 		}
 		
-		user.get().setPassword(updatedUser.getPassword());
+		admin.get().setPassword(updatedUser.getPassword());
 		
-		//dodati posts
+		adminRepository.save(admin.get());
 		
-		userRepository.save(user.get());
-		
-		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user.get()), HttpStatus.CREATED);
+		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin.get()), HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
-		if (user.isEmpty()) {
-			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		Optional<AdminEntity> admin = adminRepository.findById(id);
+		if (admin.isEmpty()) {
+			return new ResponseEntity<>("Admin not found", HttpStatus.NOT_FOUND);
 		}
 		
-		regularUserRepository.delete(user.get());
+		adminRepository.delete(admin.get());
 		
-		return new ResponseEntity<>("Successfully deleted user", HttpStatus.OK);
+		return new ResponseEntity<>("Successfully deleted admin", HttpStatus.OK);
 	}
 }
