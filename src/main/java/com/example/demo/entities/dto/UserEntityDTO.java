@@ -1,5 +1,6 @@
 package com.example.demo.entities.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -63,6 +64,10 @@ public class UserEntityDTO {
 		this.password = u.getPassword();
 		this.firstName = u.getFirstName();
 		this.role = u.getRole();
+		this.posts = new ArrayList<>();
+		for (PostEntity p : u.getPosts()) {
+			this.posts.add(p);
+		}
 	}
 
 	public Integer getId() {
