@@ -1,11 +1,14 @@
 package com.example.demo.controllers;
 
+import java.lang.System.Logger;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -38,7 +41,6 @@ public class UserController {
 	@Value("${spring.security.token-duration}")
 	private Integer tokenDuration;
 	
-	
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() {
 		List<UserEntity> users = userRepository.findAll();
@@ -53,19 +55,37 @@ public class UserController {
 	
 	@RequestMapping(method = RequestMethod.POST) 
 	public ResponseEntity<?> createUser (@RequestBody UserEntityDTO newUser) {
+		
 		UserEntity user = new UserEntity();
 		
 		user.setFirstName(newUser.getFirstName());
 		user.setLastName(newUser.getLastName());
-		user.setUsername(newUser.getUsername());
-		user.setEmail(newUser.getEmail());
-		user.setRole("ROLE_USER");
 		
-		if (newUser.getConfirmed_password() == newUser.getPassword()) {
-			user.setPassword(newUser.getFirstName());
+		UserEntity existingUsername = userRepository.findByUsername(newUser.getUsername());
+		
+		if (existingUsername != null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
-		user.setFirstName(newUser.getFirstName());
+		user.setUsername(newUser.getUsername());
+		
+		UserEntity existingEmailUser = userRepository.findByEmail(newUser.getEmail());
+		
+		if (existingEmailUser != null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		user.setEmail(newUser.getEmail());
+		
+		user.setRole("ROLE_USER");
+		
+		if (!newUser.getPassword().equals(newUser.getConfirmed_password())) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		user.setPassword(newUser.getPassword());
+		//dodati posts
+		
 		userRepository.save(user);
 		
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user), HttpStatus.CREATED);

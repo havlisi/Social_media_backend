@@ -42,11 +42,11 @@ public class UserEntityDTO {
 			+ "{min} characters long.")
 	
 	@JsonIgnore
-	@Pattern(regexp = "^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$")
+//	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
 	private String password;
 	
 	@JsonIgnore
-	@Pattern(regexp = "^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$")
+//	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
 	private String confirmed_password;
 	
 	@Column(nullable = false)
@@ -55,6 +55,9 @@ public class UserEntityDTO {
 	@Column
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<PostEntity> posts;
+	
+	public UserEntityDTO() {
+	}
 
 	public UserEntityDTO(UserEntity u) {
 		this.id = u.getId();
@@ -64,10 +67,6 @@ public class UserEntityDTO {
 		this.password = u.getPassword();
 		this.firstName = u.getFirstName();
 		this.role = u.getRole();
-		this.posts = new ArrayList<>();
-		for (PostEntity p : u.getPosts()) {
-			this.posts.add(p);
-		}
 	}
 
 	public Integer getId() {
