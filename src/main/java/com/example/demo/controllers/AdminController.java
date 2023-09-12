@@ -36,12 +36,6 @@ public class AdminController {
 	}
 	
 	@Secured("ROLE_ADMIN")
-	@RequestMapping(method = RequestMethod.PUT, path = "/{id}") 
-	public ResponseEntity<?> updateRegularUser (@RequestBody UserEntityDTO updatedUser, @PathVariable Integer id) {
-		return adminServiceImpl.updateRegularUser(updatedUser, id);	
-	}
-	
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
 		return adminServiceImpl.deleteById(id);	

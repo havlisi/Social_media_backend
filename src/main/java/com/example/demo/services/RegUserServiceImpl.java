@@ -2,9 +2,7 @@ package com.example.demo.services;
 
 import java.util.List;
 import java.util.Optional;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +19,12 @@ import com.example.demo.entities.UserEntity;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.entities.dto.UserEntityDTO;
+import com.example.demo.exceptions.NonExistingEmailException;
+import com.example.demo.exceptions.PasswordConfirmationException;
+import com.example.demo.exceptions.UnauthorizedUserException;
+import com.example.demo.exceptions.UserWithEmailExistsException;
+import com.example.demo.exceptions.UserWithUsernameExistsException;
+import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.RegularUserRepository;
 import com.example.demo.repositories.UserRepository;
@@ -43,24 +47,24 @@ public class RegUserServiceImpl implements RegularUserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	public ResponseEntity<?> getAll() {
+	public ResponseEntity<?> getAll() throws Exception {
 		List<RegularUserEntity> users = (List<RegularUserEntity>) regularUserRepository.findAll();
 		if (users.isEmpty()) {
-			return new ResponseEntity<>("No users found", HttpStatus.NOT_FOUND);
+			throw new UserNotFoundException("No users found");
 		}
 		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 	
-	public ResponseEntity<?> getById(@PathVariable Integer id) {
+	public ResponseEntity<?> getById(@PathVariable Integer id) throws Exception {
 		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
 		if (user.isEmpty()) {
-			return new ResponseEntity<>("User with that id not found", HttpStatus.NOT_FOUND);
+			throw new UserNotFoundException("User with that id not found");
 		}
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST) 
-	public ResponseEntity<?> createRegularUser (@Valid @RequestBody RegularUserEntityDTO newUser) {
+	public ResponseEntity<?> createRegularUser (@Valid @RequestBody RegularUserEntityDTO newUser) throws Exception {
 		
 		RegularUserEntity user = new RegularUserEntity();
 		
@@ -70,7 +74,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		UserEntity existingUsername = userRepository.findByUsername(newUser.getUsername());
 		
 		if (existingUsername != null) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			throw new UserWithUsernameExistsException("Username already exists");
 		}
 		
 		user.setUsername(newUser.getUsername());
@@ -78,22 +82,15 @@ public class RegUserServiceImpl implements RegularUserService {
 		UserEntity existingEmailUser = userRepository.findByEmail(newUser.getEmail());
 		
 		if (existingEmailUser != null) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			throw new UserWithEmailExistsException("Email already exists");
 		}
 		
 		user.setEmail(newUser.getEmail());
 		
 		user.setRole("ROLE_REGULAR_USER");
 		
-		System.out.println(newUser.getFirstName());
-		System.out.println(newUser.getLastName());
-		System.out.println(newUser.getUsername());
-		System.out.println(newUser.getEmail());
-		System.out.println(newUser.getPassword());
-		System.out.println(newUser.getConfirmedPassword());
-		
 		if (!newUser.getPassword().equals(newUser.getConfirmedPassword())) {
-			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
+			throw new PasswordConfirmationException("Password must be same as confirmed password");
 		}
 		
 		user.setPassword((passwordEncoder.encode(newUser.getPassword())));
@@ -104,114 +101,83 @@ public class RegUserServiceImpl implements RegularUserService {
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user, newUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	public ResponseEntity<?> updateRegularUser (@Valid @RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id, Authentication authentication) {
+	public ResponseEntity<?> updateUser (@Valid @RequestBody RegularUserEntityDTO updatedUser, Authentication authentication) throws Exception {
 		
 		String email = authentication.getName();
 		UserEntity loggedUser = userRepository.findByEmail(email);
 		
-		Optional<UserEntity> user = userRepository.findById(id);
-		
 		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
 			RegularUserEntity regularUser = (RegularUserEntity) loggedUser;
 			
-			if (user.get().getId() == regularUser.getId()) {
-				regularUser.setFirstName(updatedUser.getFirstName());
-				regularUser.setLastName(updatedUser.getLastName());
+			//dodati za svaki ikad field da li je null ako nije da se setuju podaci
+			
+			regularUser.setFirstName(updatedUser.getFirstName());
+			regularUser.setLastName(updatedUser.getLastName());
+			
+			if (!regularUser.getUsername().equals(updatedUser.getUsername())) {
+				UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
 				
-				if (!regularUser.getUsername().equals(updatedUser.getUsername())) {
-					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
-					
-					if (existingUsername != null) {
-						return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-					}
+				if (existingUsername != null) {
+					throw new UserWithUsernameExistsException("Username already exists");
 				}
-				
-				regularUser.setUsername(updatedUser.getUsername());
-				
-				if (!regularUser.getEmail().equals(updatedUser.getEmail())) {
-					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
-					
-					if (existingEmailUser != null) {
-						return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
-					}
-				}
-				
-				regularUser.setEmail(updatedUser.getEmail());
-				
-				System.out.println(updatedUser.getFirstName());
-				System.out.println(updatedUser.getLastName());
-				System.out.println(updatedUser.getUsername());
-				System.out.println(updatedUser.getEmail());
-				System.out.println(updatedUser.getPassword());
-				System.out.println(updatedUser.getConfirmedPassword());
-				
-				if (!updatedUser.getPassword().equals(updatedUser.getConfirmedPassword())) {
-					return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
-				}
-				
-				regularUser.setPassword((passwordEncoder.encode(updatedUser.getPassword())));
-				updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
-				
-				userRepository.save(regularUser);
-				
-				return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(regularUser, updatedUser.getConfirmedPassword()), HttpStatus.OK);
 			}
+			
+			regularUser.setUsername(updatedUser.getUsername());
+			
+			if (!regularUser.getEmail().equals(updatedUser.getEmail())) {
+				UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+				
+				if (existingEmailUser != null) {
+					throw new UserWithEmailExistsException("Email already exists");
+				}
+			}
+			
+			regularUser.setEmail(updatedUser.getEmail());
+			
+			userRepository.save(regularUser);
+			
+			return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(regularUser, updatedUser.getConfirmedPassword()), HttpStatus.OK);
 		} else if(loggedUser.getRole().equals("ROLE_ADMIN")) {
 			AdminEntity admin = (AdminEntity) loggedUser;
 			
-			if (user.get().getId() == admin.getId()) {
-				admin.setFirstName(updatedUser.getFirstName());
-				admin.setLastName(updatedUser.getLastName());
+			admin.setFirstName(updatedUser.getFirstName());
+			admin.setLastName(updatedUser.getLastName());
+			
+			if (!admin.getUsername().equals(updatedUser.getUsername())) {
+				UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
 				
-				if (!admin.getUsername().equals(updatedUser.getUsername())) {
-					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
-					
-					if (existingUsername != null) {
-						return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-					}
+				if (existingUsername != null) {
+					throw new UserWithUsernameExistsException("Username already exists");
 				}
-				
-				admin.setUsername(updatedUser.getUsername());
-				
-				if (!admin.getEmail().equals(updatedUser.getEmail())) {
-					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
-					
-					if (existingEmailUser != null) {
-						return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
-					}
-				}
-				
-				admin.setEmail(updatedUser.getEmail());
-				
-				System.out.println(updatedUser.getFirstName());
-				System.out.println(updatedUser.getLastName());
-				System.out.println(updatedUser.getUsername());
-				System.out.println(updatedUser.getEmail());
-				System.out.println(updatedUser.getPassword());
-				System.out.println(updatedUser.getConfirmedPassword());
-				
-				if (!updatedUser.getPassword().equals(updatedUser.getConfirmedPassword())) {
-					return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
-				}
-				
-				admin.setPassword((passwordEncoder.encode(updatedUser.getPassword())));
-				updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
-				
-				userRepository.save(admin);
-				
-				return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin, updatedUser.getConfirmedPassword()), HttpStatus.OK);
 			}
+			
+			admin.setUsername(updatedUser.getUsername());
+			
+			if (!admin.getEmail().equals(updatedUser.getEmail())) {
+				UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+				
+				if (existingEmailUser != null) {
+					throw new UserWithEmailExistsException("Email already exists");
+				}
+			}
+			
+			admin.setEmail(updatedUser.getEmail());
+			
+			userRepository.save(admin);
+			
+			return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin, updatedUser.getConfirmedPassword()), HttpStatus.OK);
 		}
 		
 		
-		return new ResponseEntity<>("User is not authorized to update this user", HttpStatus.UNAUTHORIZED);
+		throw new UnauthorizedUserException("User is not authorized to update this user");
 		
 	}
 
-	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
+	public ResponseEntity<?> deleteById(@PathVariable Integer id) throws Exception {
 		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
+	
 		if (user.isEmpty()) {
-			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+			throw new UserNotFoundException("User with that id not found");
 		}
 		
 		regularUserRepository.delete(user.get());
@@ -219,12 +185,12 @@ public class RegUserServiceImpl implements RegularUserService {
 		return new ResponseEntity<>("Successfully deleted user", HttpStatus.OK);
 	}
 	
-	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDTO user) {
+	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDTO user) throws Exception {
 		
 		UserEntity loggedUser = userRepository.findByEmail(user.getEmail());
 		
 		if (loggedUser == null) {
-			return new ResponseEntity<>("Email doesn't exist.", HttpStatus.BAD_REQUEST);
+			throw new NonExistingEmailException("Email doesn't exist.");
 		}
 		
 		if(loggedUser.getRole().equals("ROLE_ADMIN")) {
@@ -244,7 +210,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		
-		return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+		throw new UserNotFoundException("User with that id not found");
 	}
 
 }

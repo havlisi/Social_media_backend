@@ -92,49 +92,6 @@ public class AdminServiceImpl implements AdminService {
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin, newUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT, path = "/{id}") 
-	public ResponseEntity<?> updateRegularUser (@RequestBody UserEntityDTO updatedUser, @PathVariable Integer id) {
-		
-		Optional<AdminEntity> admin = adminRepository.findById(id);
-		
-		admin.get().setFirstName(updatedUser.getFirstName());
-		admin.get().setLastName(updatedUser.getLastName());
-		
-		UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
-		
-		if (existingUsername != null) {
-			return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-		}
-		
-		admin.get().setUsername(updatedUser.getUsername());
-		
-		UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
-		
-		if (existingEmailUser != null) {
-			return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
-		}
-		
-		admin.get().setEmail(updatedUser.getEmail());
-		
-		System.out.println(updatedUser.getFirstName());
-		System.out.println(updatedUser.getLastName());
-		System.out.println(updatedUser.getUsername());
-		System.out.println(updatedUser.getEmail());
-		System.out.println(updatedUser.getPassword());
-		System.out.println(updatedUser.getConfirmedPassword());
-		
-		if (!updatedUser.getPassword().equals(updatedUser.getConfirmedPassword())) {
-			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
-		}
-		
-		admin.get().setPassword(updatedUser.getPassword());		
-		updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
-
-		adminRepository.save(admin.get());
-		
-		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin.get(),  updatedUser.getConfirmedPassword()), HttpStatus.CREATED);
-	}
-	
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
 		Optional<AdminEntity> admin = adminRepository.findById(id);
