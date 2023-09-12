@@ -1,152 +1,54 @@
 package com.example.demo.controllers;
 
-import java.util.List;
-import java.util.Optional;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.entities.RegularUserEntity;
-import com.example.demo.entities.UserEntity;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
-import com.example.demo.entities.dto.UserEntityDTO;
-import com.example.demo.repositories.RegularUserRepository;
-import com.example.demo.repositories.UserRepository;
+import com.example.demo.services.RegUserServiceImpl;
 
 @RestController
 @RequestMapping(path = "api/v1/regularUser")
 public class RegularUserController {
 	
 	@Autowired
-	RegularUserRepository regularUserRepository;
+	private RegUserServiceImpl regUserServiceImpl;
 	
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() {
-		List<RegularUserEntity> users = (List<RegularUserEntity>) regularUserRepository.findAll();
-		if (users.isEmpty()) {
-			return new ResponseEntity<>("No users found", HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(users, HttpStatus.OK);
+		return regUserServiceImpl.getAll();
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable Integer id) {
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
-		if (user.isEmpty()) {
-			return new ResponseEntity<>("User with that id not found", HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(user, HttpStatus.OK);
+		return regUserServiceImpl.getById(id);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST) 
 	public ResponseEntity<?> createRegularUser (@RequestBody RegularUserEntityDTO newUser) {
-		
-		RegularUserEntity user = new RegularUserEntity();
-		
-		user.setFirstName(newUser.getFirstName());
-		user.setLastName(newUser.getLastName());
-		
-		UserEntity existingUsername = userRepository.findByUsername(newUser.getUsername());
-		
-		if (existingUsername != null) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		
-		user.setUsername(newUser.getUsername());
-		
-		UserEntity existingEmailUser = userRepository.findByEmail(newUser.getEmail());
-		
-		if (existingEmailUser != null) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		
-		user.setEmail(newUser.getEmail());
-		
-		user.setRole("ROLE_REGULAR_USER");
-		
-		System.out.println(newUser.getFirstName());
-		System.out.println(newUser.getLastName());
-		System.out.println(newUser.getUsername());
-		System.out.println(newUser.getEmail());
-		System.out.println(newUser.getPassword());
-		System.out.println(newUser.getConfirmed_password());
-		
-		if (!newUser.getPassword().equals(newUser.getConfirmed_password())) {
-			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
-		}
-		
-		user.setPassword((passwordEncoder.encode(newUser.getPassword())));
-		
-		userRepository.save(user);
-		
-		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user), HttpStatus.CREATED);
+		return regUserServiceImpl.createRegularUser(newUser);
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/{id}") 
 	public ResponseEntity<?> updateRegularUser (@RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id) {
-		
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
-		
-		user.get().setFirstName(updatedUser.getFirstName());
-		user.get().setLastName(updatedUser.getLastName());
-		
-		UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
-		
-		if (existingUsername != null) {
-			return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-		}
-		
-		user.get().setUsername(updatedUser.getUsername());
-		
-		UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
-		
-		if (existingEmailUser != null) {
-			return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
-		}
-		
-		user.get().setEmail(updatedUser.getEmail());
-		
-		System.out.println(updatedUser.getFirstName());
-		System.out.println(updatedUser.getLastName());
-		System.out.println(updatedUser.getUsername());
-		System.out.println(updatedUser.getEmail());
-		System.out.println(updatedUser.getPassword());
-		System.out.println(updatedUser.getConfirmed_password());
-		
-		if (!updatedUser.getPassword().equals(updatedUser.getConfirmed_password())) {
-			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
-		}
-		
-		user.get().setPassword(updatedUser.getPassword());
-		
-		userRepository.save(user.get());
-		
-		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user.get()), HttpStatus.CREATED);
+		return regUserServiceImpl.updateRegularUser(updatedUser, id);
 	}
 	
+	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
-		if (user.isEmpty()) {
-			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-		}
-		
-		regularUserRepository.delete(user.get());
-		
-		return new ResponseEntity<>("Successfully deleted user", HttpStatus.OK);
+		return regUserServiceImpl.deleteById(id);
+	}
+	
+	@Secured({"ROLE_ADMIN", "ROLE_REGULAR_USER"})
+	public ResponseEntity<?> forgotPassword(String userEmail) {
+		return regUserServiceImpl.forgotPassword(userEmail);
 	}
 }

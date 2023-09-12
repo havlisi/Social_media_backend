@@ -36,7 +36,7 @@ public class UserEntityDTO {
 	private String password;
 	
 //	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
-	private String confirmed_password;
+	private String confirmedPassword;
 	
 	@Column(nullable = false)
 	private String role;
@@ -44,13 +44,13 @@ public class UserEntityDTO {
 	public UserEntityDTO() {
 	}
 
-	public UserEntityDTO(UserEntity u) {
+	public UserEntityDTO(UserEntity u, String confirmedPassword) {
 		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();
 		this.email = u.getEmail();
 		this.password = u.getPassword();
-		this.confirmed_password = u.getConfirmed_password();
+		this.confirmedPassword = confirmedPassword;
 		this.firstName = u.getFirstName();
 		this.role = u.getRole();
 	}
@@ -111,11 +111,11 @@ public class UserEntityDTO {
 		this.role = role;
 	}
 
-	public String getConfirmed_password() {
-		return confirmed_password;
+	public String getConfirmedPassword() {
+		return confirmedPassword;
 	}
 
-	public void setConfirmed_password(String confirmed_password) {
-		this.confirmed_password = confirmed_password;
+	public void setConfirmedPassword(String confirmedPassword) {
+		this.confirmedPassword = confirmedPassword;
 	}
 }
