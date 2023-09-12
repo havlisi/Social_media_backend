@@ -57,7 +57,7 @@ public class RegularUserEntityDTO {
 		this.email = u.getEmail();
 		this.password = u.getPassword();
 		this.confirmedPassword = confirmedPassword;
-		this.firstName = u.getFirstName();
+		this.username = u.getUsername();
 		this.role = u.getRole();
 		List<PostEntity> posts = new ArrayList<>();
 		for (PostEntity post : u.getPosts()) {

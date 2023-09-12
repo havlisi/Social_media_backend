@@ -3,10 +3,12 @@ package com.example.demo.services;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,7 +60,7 @@ public class RegUserServiceImpl implements RegularUserService {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST) 
-	public ResponseEntity<?> createRegularUser (@RequestBody RegularUserEntityDTO newUser) {
+	public ResponseEntity<?> createRegularUser (@Valid @RequestBody RegularUserEntityDTO newUser) {
 		
 		RegularUserEntity user = new RegularUserEntity();
 		
@@ -102,60 +104,108 @@ public class RegUserServiceImpl implements RegularUserService {
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user, newUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	public ResponseEntity<?> updateRegularUser (@RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id, Authentication authentication) {
+	public ResponseEntity<?> updateRegularUser (@Valid @RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id, Authentication authentication) {
 		
-		String email = authentication.getClass().getName();
+		String email = authentication.getName();
 		UserEntity loggedUser = userRepository.findByEmail(email);
 		
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
-		
-		if(user.isEmpty()) {
-			return new ResponseEntity<>("User not found in the database.", HttpStatus.NOT_FOUND);
-		}
+		Optional<UserEntity> user = userRepository.findById(id);
 		
 		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
 			RegularUserEntity regularUser = (RegularUserEntity) loggedUser;
+			
+			if (user.get().getId() == regularUser.getId()) {
+				regularUser.setFirstName(updatedUser.getFirstName());
+				regularUser.setLastName(updatedUser.getLastName());
+				
+				if (!regularUser.getUsername().equals(updatedUser.getUsername())) {
+					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
+					
+					if (existingUsername != null) {
+						return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
+					}
+				}
+				
+				regularUser.setUsername(updatedUser.getUsername());
+				
+				if (!regularUser.getEmail().equals(updatedUser.getEmail())) {
+					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+					
+					if (existingEmailUser != null) {
+						return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
+					}
+				}
+				
+				regularUser.setEmail(updatedUser.getEmail());
+				
+				System.out.println(updatedUser.getFirstName());
+				System.out.println(updatedUser.getLastName());
+				System.out.println(updatedUser.getUsername());
+				System.out.println(updatedUser.getEmail());
+				System.out.println(updatedUser.getPassword());
+				System.out.println(updatedUser.getConfirmedPassword());
+				
+				if (!updatedUser.getPassword().equals(updatedUser.getConfirmedPassword())) {
+					return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
+				}
+				
+				regularUser.setPassword((passwordEncoder.encode(updatedUser.getPassword())));
+				updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
+				
+				userRepository.save(regularUser);
+				
+				return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(regularUser, updatedUser.getConfirmedPassword()), HttpStatus.OK);
+			}
+		} else if(loggedUser.getRole().equals("ROLE_ADMIN")) {
+			AdminEntity admin = (AdminEntity) loggedUser;
+			
+			if (user.get().getId() == admin.getId()) {
+				admin.setFirstName(updatedUser.getFirstName());
+				admin.setLastName(updatedUser.getLastName());
+				
+				if (!admin.getUsername().equals(updatedUser.getUsername())) {
+					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
+					
+					if (existingUsername != null) {
+						return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
+					}
+				}
+				
+				admin.setUsername(updatedUser.getUsername());
+				
+				if (!admin.getEmail().equals(updatedUser.getEmail())) {
+					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+					
+					if (existingEmailUser != null) {
+						return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
+					}
+				}
+				
+				admin.setEmail(updatedUser.getEmail());
+				
+				System.out.println(updatedUser.getFirstName());
+				System.out.println(updatedUser.getLastName());
+				System.out.println(updatedUser.getUsername());
+				System.out.println(updatedUser.getEmail());
+				System.out.println(updatedUser.getPassword());
+				System.out.println(updatedUser.getConfirmedPassword());
+				
+				if (!updatedUser.getPassword().equals(updatedUser.getConfirmedPassword())) {
+					return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
+				}
+				
+				admin.setPassword((passwordEncoder.encode(updatedUser.getPassword())));
+				updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
+				
+				userRepository.save(admin);
+				
+				return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin, updatedUser.getConfirmedPassword()), HttpStatus.OK);
+			}
 		}
 		
 		
+		return new ResponseEntity<>("User is not authorized to update this user", HttpStatus.UNAUTHORIZED);
 		
-		user.get().setFirstName(updatedUser.getFirstName());
-		user.get().setLastName(updatedUser.getLastName());
-		
-		UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
-		
-		if (existingUsername != null) {
-			return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-		}
-		
-		user.get().setUsername(updatedUser.getUsername());
-		
-		//resiti menjanje email-a
-		UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
-		
-		if (existingEmailUser != null) {
-			return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
-		}
-		
-		user.get().setEmail(updatedUser.getEmail());
-		
-		System.out.println(updatedUser.getFirstName());
-		System.out.println(updatedUser.getLastName());
-		System.out.println(updatedUser.getUsername());
-		System.out.println(updatedUser.getEmail());
-		System.out.println(updatedUser.getPassword());
-		System.out.println(updatedUser.getConfirmedPassword());
-		
-		if (!updatedUser.getPassword().equals(updatedUser.getConfirmedPassword())) {
-			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
-		}
-		
-		user.get().setPassword((passwordEncoder.encode(updatedUser.getPassword())));
-		updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
-		
-		userRepository.save(user.get());
-		
-		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user.get(), updatedUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
