@@ -50,6 +50,7 @@ public class UserEntityDTO {
 		this.lastName = u.getLastName();
 		this.email = u.getEmail();
 		this.password = u.getPassword();
+		this.username = u.getUsername();
 		this.confirmedPassword = confirmedPassword;
 		this.firstName = u.getFirstName();
 		this.role = u.getRole();
