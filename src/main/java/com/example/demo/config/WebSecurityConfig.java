@@ -42,7 +42,8 @@ public class WebSecurityConfig {
 				.addFilterAfter(new JWTAuthorizationFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/v1/regularUser").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/regular-user").permitAll()
+				.antMatchers(HttpMethod.PUT, "/api/v1/regular-user/forgot-password").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/v1/admin").permitAll()
 				.anyRequest().authenticated();
 		return http.build();

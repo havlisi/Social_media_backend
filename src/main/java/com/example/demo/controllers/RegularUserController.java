@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
+import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.services.RegUserServiceImpl;
 
 @RestController
-@RequestMapping(path = "api/v1/regularUser")
+@RequestMapping(path = "api/v1/regular-user")
 public class RegularUserController {
 	
 	@Autowired
@@ -36,9 +37,10 @@ public class RegularUserController {
 		return regUserServiceImpl.createRegularUser(newUser);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_REGULAR_USER"})
 	@RequestMapping(method = RequestMethod.PUT, path = "/{id}") 
-	public ResponseEntity<?> updateRegularUser (@RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id) {
-		return regUserServiceImpl.updateRegularUser(updatedUser, id);
+	public ResponseEntity<?> updateRegularUser (@RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id, Authentication authentication) {
+		return regUserServiceImpl.updateRegularUser(updatedUser, id, authentication);
 	}
 	
 	@Secured("ROLE_ADMIN")
@@ -47,8 +49,8 @@ public class RegularUserController {
 		return regUserServiceImpl.deleteById(id);
 	}
 	
-	@Secured({"ROLE_ADMIN", "ROLE_REGULAR_USER"})
-	public ResponseEntity<?> forgotPassword(String userEmail) {
-		return regUserServiceImpl.forgotPassword(userEmail);
+	@RequestMapping(method = RequestMethod.PUT, path = "/forgot-password")
+	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDTO user) {
+		return regUserServiceImpl.forgotPassword(user);
 	}
 }

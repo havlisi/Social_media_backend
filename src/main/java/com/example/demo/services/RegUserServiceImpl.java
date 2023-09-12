@@ -2,6 +2,8 @@ package com.example.demo.services;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.entities.AdminEntity;
 import com.example.demo.entities.RegularUserEntity;
 import com.example.demo.entities.UserEntity;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
+import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.entities.dto.UserEntityDTO;
 import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.RegularUserRepository;
@@ -93,15 +95,29 @@ public class RegUserServiceImpl implements RegularUserService {
 		}
 		
 		user.setPassword((passwordEncoder.encode(newUser.getPassword())));
+		newUser.setConfirmedPassword((passwordEncoder.encode(newUser.getConfirmedPassword())));
 		
 		userRepository.save(user);
 		
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user, newUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	public ResponseEntity<?> updateRegularUser (@RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id) {
+	public ResponseEntity<?> updateRegularUser (@RequestBody RegularUserEntityDTO updatedUser, @PathVariable Integer id, Authentication authentication) {
+		
+		String email = authentication.getClass().getName();
+		UserEntity loggedUser = userRepository.findByEmail(email);
 		
 		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
+		
+		if(user.isEmpty()) {
+			return new ResponseEntity<>("User not found in the database.", HttpStatus.NOT_FOUND);
+		}
+		
+		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
+			RegularUserEntity regularUser = (RegularUserEntity) loggedUser;
+		}
+		
+		
 		
 		user.get().setFirstName(updatedUser.getFirstName());
 		user.get().setLastName(updatedUser.getLastName());
@@ -114,6 +130,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		user.get().setUsername(updatedUser.getUsername());
 		
+		//resiti menjanje email-a
 		UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
 		
 		if (existingEmailUser != null) {
@@ -134,6 +151,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		}
 		
 		user.get().setPassword((passwordEncoder.encode(updatedUser.getPassword())));
+		updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
 		
 		userRepository.save(user.get());
 		
@@ -151,9 +169,9 @@ public class RegUserServiceImpl implements RegularUserService {
 		return new ResponseEntity<>("Successfully deleted user", HttpStatus.OK);
 	}
 	
-	public ResponseEntity<?> forgotPassword(@RequestParam String userEmail) {
+	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDTO user) {
 		
-		UserEntity loggedUser = userRepository.findByEmail(userEmail);
+		UserEntity loggedUser = userRepository.findByEmail(user.getEmail());
 		
 		if (loggedUser == null) {
 			return new ResponseEntity<>("Email doesn't exist.", HttpStatus.BAD_REQUEST);
@@ -168,10 +186,10 @@ public class RegUserServiceImpl implements RegularUserService {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		else if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
-			RegularUserEntity user = (RegularUserEntity) loggedUser;
+			RegularUserEntity regUser = (RegularUserEntity) loggedUser;
 			String newPass = "password321";
-			user.setPassword((passwordEncoder.encode(newPass)));
-			userRepository.save(user);
+			regUser.setPassword((passwordEncoder.encode(newPass)));
+			userRepository.save(regUser);
 			emailServiceImpl.sendNewMail("isidorahavlovic@gmail.com", newPass);
 			return new ResponseEntity<>(HttpStatus.OK);
 		}

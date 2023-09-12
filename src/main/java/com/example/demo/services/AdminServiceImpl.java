@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +29,6 @@ public class AdminServiceImpl implements AdminService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() {
 		List<AdminEntity> admins = (List<AdminEntity>) adminRepository.findAll();
@@ -40,7 +38,6 @@ public class AdminServiceImpl implements AdminService {
 		return new ResponseEntity<>(admins, HttpStatus.OK);
 	}
 	
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable Integer id) {
 		Optional<AdminEntity> admin = adminRepository.findById(id);
@@ -50,7 +47,6 @@ public class AdminServiceImpl implements AdminService {
 		return new ResponseEntity<>(admin, HttpStatus.OK);
 	}
 	
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.POST) 
 	public ResponseEntity<?> createAdmin (@RequestBody UserEntityDTO newUser) {
 		
@@ -89,13 +85,13 @@ public class AdminServiceImpl implements AdminService {
 		}
 		
 		admin.setPassword((passwordEncoder.encode(newUser.getPassword())));
-		
+		newUser.setConfirmedPassword((passwordEncoder.encode(newUser.getConfirmedPassword())));
+
 		adminRepository.save(admin);
 		
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin, newUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.PUT, path = "/{id}") 
 	public ResponseEntity<?> updateRegularUser (@RequestBody UserEntityDTO updatedUser, @PathVariable Integer id) {
 		
@@ -131,14 +127,14 @@ public class AdminServiceImpl implements AdminService {
 			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
 		}
 		
-		admin.get().setPassword(updatedUser.getPassword());
-		
+		admin.get().setPassword(updatedUser.getPassword());		
+		updatedUser.setConfirmedPassword((passwordEncoder.encode(updatedUser.getConfirmedPassword())));
+
 		adminRepository.save(admin.get());
 		
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin.get(),  updatedUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
 		Optional<AdminEntity> admin = adminRepository.findById(id);

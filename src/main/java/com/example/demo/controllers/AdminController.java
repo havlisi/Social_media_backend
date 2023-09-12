@@ -30,7 +30,6 @@ public class AdminController {
 		return adminServiceImpl.getById(id);
 	}
 	
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.POST) 
 	public ResponseEntity<?> createAdmin (@RequestBody UserEntityDTO newUser) {
 		return adminServiceImpl.createAdmin(newUser);
