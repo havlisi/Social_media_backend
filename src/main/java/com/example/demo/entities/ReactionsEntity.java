@@ -27,15 +27,30 @@ public class ReactionsEntity {
 			@JoinColumn(name = "Reaction_id", nullable = false, updatable = false)} , inverseJoinColumns = {
 					@JoinColumn(name = "Post_id", nullable = false, updatable = false) })
 	private List<PostEntity> post;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+	@JoinTable(name = "UserReactions", joinColumns = {
+			@JoinColumn(name = "Reaction_id", nullable = false, updatable = false)} , inverseJoinColumns = {
+					@JoinColumn(name = "User_id", nullable = false, updatable = false) })
+	private List<RegularUserEntity> regularUser;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+	@JoinTable(name = "CommentReactions", joinColumns = {
+			@JoinColumn(name = "Reaction_id", nullable = false, updatable = false)} , inverseJoinColumns = {
+					@JoinColumn(name = "Comment_id", nullable = false, updatable = false) })
+	private List<Comments> comments;
 
 	public ReactionsEntity() {
 		super();
 	}
 
-	public ReactionsEntity(Integer id, List<PostEntity> post) {
+	public ReactionsEntity(Integer id, List<PostEntity> post, List<RegularUserEntity> regularUser,
+			List<Comments> comments) {
 		super();
 		this.id = id;
 		this.post = post;
+		this.regularUser = regularUser;
+		this.comments = comments;
 	}
 
 	public Integer getId() {
@@ -52,6 +67,22 @@ public class ReactionsEntity {
 
 	public void setPost(List<PostEntity> post) {
 		this.post = post;
+	}
+
+	public List<RegularUserEntity> getRegularUser() {
+		return regularUser;
+	}
+
+	public void setRegularUser(List<RegularUserEntity> regularUser) {
+		this.regularUser = regularUser;
+	}
+
+	public List<Comments> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comments> comments) {
+		this.comments = comments;
 	}
 	
 }

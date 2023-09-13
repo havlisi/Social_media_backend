@@ -45,6 +45,7 @@ public class WebSecurityConfig {
 				.antMatchers(HttpMethod.POST, "/api/v1/regular-user").permitAll()
 				.antMatchers(HttpMethod.PUT, "/api/v1/regular-user/forgot-password").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/v1/admin").permitAll()
+				.antMatchers(HttpMethod.GET, "api/v1/regular-user/{id}").permitAll()
 				.anyRequest().authenticated();
 		return http.build();
 	}

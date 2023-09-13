@@ -11,7 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import javax.persistence.OneToMany;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,11 +26,14 @@ public class PostEntity {
 	private Integer id;
 	
 	@Column
-	@NotNull(message = "URL must be included.")
-	private String url;
+	private String title;
 	
 	@Column
-	private String description;
+	private String content;
+	
+	@Column
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Comments> comments;
 	
 	@Column
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
@@ -39,21 +43,22 @@ public class PostEntity {
 	private List<ReactionsEntity> reactions;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-	@JoinColumn(name = "user")
-	private UserEntity user;
+	@JoinColumn(name = "regularUser")
+	private RegularUserEntity regularUser;
 
 	public PostEntity() {
 		super();
 	}
 
-	public PostEntity(Integer id, @NotNull(message = "URL must be included.") String url, String description,
-			List<ReactionsEntity> reactions, UserEntity user) {
+	public PostEntity(Integer id, String title, String content, List<Comments> comments,
+			List<ReactionsEntity> reactions, RegularUserEntity regularUser) {
 		super();
 		this.id = id;
-		this.url = url;
-		this.description = description;
+		this.title = title;
+		this.content = content;
+		this.comments = comments;
 		this.reactions = reactions;
-		this.user = user;
+		this.regularUser = regularUser;
 	}
 
 	public Integer getId() {
@@ -64,20 +69,28 @@ public class PostEntity {
 		this.id = id;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getContent() {
+		return content;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public List<Comments> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comments> comments) {
+		this.comments = comments;
 	}
 
 	public List<ReactionsEntity> getReactions() {
@@ -88,12 +101,12 @@ public class PostEntity {
 		this.reactions = reactions;
 	}
 
-	public UserEntity getUser() {
-		return user;
+	public RegularUserEntity getRegularUser() {
+		return regularUser;
 	}
 
-	public void setUser(UserEntity user) {
-		this.user = user;
+	public void setRegularUser(RegularUserEntity regularUser) {
+		this.regularUser = regularUser;
 	}
 	
 }

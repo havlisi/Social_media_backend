@@ -40,7 +40,6 @@ public class RegularUserController {
 		}
 	}
 	
-	@Secured("ROLE_ADMIN")
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable Integer id) throws Exception {
 		try {

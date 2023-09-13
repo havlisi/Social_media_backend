@@ -7,7 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import com.example.demo.entities.PostEntity;
 import com.example.demo.entities.RegularUserEntity;
+import com.example.demo.exceptions.PostNotFoundException;
 import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.repositories.FollowingRepository;
 import com.example.demo.repositories.PostRepository;
 import com.example.demo.repositories.RegularUserRepository;
 
@@ -19,6 +21,9 @@ public class PostServiceImpl implements PostService {
 	
 	@Autowired
 	RegularUserRepository regularUserRepository;
+	
+	@Autowired
+	FollowingRepository followingRepository;
 
 	public List<PostEntity> getAll() throws Exception {
 		List<PostEntity> posts = (List<PostEntity>) postRepository.findAll();
@@ -36,8 +41,19 @@ public class PostServiceImpl implements PostService {
 		List<PostEntity> posts = new ArrayList<>();
 		
 		if (posts.isEmpty()) {
-			throw new UserNotFoundException("No posts found");
+			throw new PostNotFoundException("No posts found in the database");
 		}
+		
+		List<RegularUserEntity> followees = followingRepository.findAllByFollowerId(loggedUser.getId());
+		
+		if (followees.isEmpty()) {
+			throw new UserNotFoundException("No followees found in the database");
+		}
+		
+		for (RegularUserEntity followee : followees) {
+			posts.addAll(followee.getPosts()); 
+		}
+		
 		return posts;
 
 	}
