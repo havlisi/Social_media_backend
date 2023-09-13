@@ -59,12 +59,12 @@ public class PostController {
 		}
 	}
 	
-	@Secured("ROLE_REGULAR_USER")
-	@RequestMapping(method = RequestMethod.PUT)
-	public ResponseEntity<?> addComment(@RequestBody CommentDTO newComment, Authentication authentication) throws Exception {
-		return new ResponseEntity<>(postServiceImpl.addComment(newComment, authentication), HttpStatus.CREATED);
-	}
-	
+//	@Secured("ROLE_REGULAR_USER")
+//	@RequestMapping(method = RequestMethod.PUT)
+//	public ResponseEntity<?> addComment(@RequestBody CommentDTO newComment, Authentication authentication) throws Exception {
+//		return new ResponseEntity<>(postServiceImpl.addComment(newComment, authentication), HttpStatus.CREATED);
+//	}
+//	
 	//metoda za dodavanje reakcja na post
 
 }
