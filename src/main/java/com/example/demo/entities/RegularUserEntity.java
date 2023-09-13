@@ -36,6 +36,14 @@ public class RegularUserEntity extends UserEntity {
 					@JoinColumn(name = "Reaction_id", nullable = false, updatable = false) })
 	private List<ReactionsEntity> reactions;
 	
+	@Column
+	@OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Following> followers;
+	
+	@Column
+	@OneToMany(mappedBy = "followee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Following> followees;
+	
 	public RegularUserEntity() {
 		super();
 	}

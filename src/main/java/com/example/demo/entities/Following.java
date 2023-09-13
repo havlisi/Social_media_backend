@@ -1,9 +1,14 @@
 package com.example.demo.entities;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -16,17 +21,29 @@ public class Following {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 	
-	private RegularUserEntity followerId;
-	private RegularUserEntity followeeId;
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = "follower")
+	private RegularUserEntity follower;
 	
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = "followee")
+	private RegularUserEntity followee;
+
 	public Following() {
 		super();
 	}
-
-	public Following(RegularUserEntity followerId, RegularUserEntity followeeId) {
+	
+	public Following(RegularUserEntity follower, RegularUserEntity followee) {
 		super();
-		this.followerId = followerId;
-		this.followeeId = followeeId;
+		this.follower = follower;
+		this.followee = followee;
+	}
+
+	public Following(Integer id, RegularUserEntity follower, RegularUserEntity followee) {
+		super();
+		this.id = id;
+		this.follower = follower;
+		this.followee = followee;
 	}
 
 	public Integer getId() {
@@ -37,20 +54,20 @@ public class Following {
 		this.id = id;
 	}
 
-	public RegularUserEntity getFollowerId() {
-		return followerId;
+	public RegularUserEntity getFollower() {
+		return follower;
 	}
 
-	public void setFollowerId(RegularUserEntity followerId) {
-		this.followerId = followerId;
+	public void setFollower(RegularUserEntity follower) {
+		this.follower = follower;
 	}
 
-	public RegularUserEntity getFolloweeId() {
-		return followeeId;
+	public RegularUserEntity getFollowee() {
+		return followee;
 	}
 
-	public void setFolloweeId(RegularUserEntity followeeId) {
-		this.followeeId = followeeId;
+	public void setFollowee(RegularUserEntity followee) {
+		this.followee = followee;
 	}
 
 }
