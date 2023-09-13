@@ -17,6 +17,7 @@ import com.example.demo.entities.AdminEntity;
 import com.example.demo.entities.RegularUserEntity;
 import com.example.demo.entities.UserEntity;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
+import com.example.demo.entities.dto.UpdateUserEntityDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.entities.dto.UserEntityDTO;
 import com.example.demo.exceptions.NonExistingEmailException;
@@ -101,7 +102,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user, newUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	public ResponseEntity<?> updateUser (@Valid @RequestBody RegularUserEntityDTO updatedUser, Authentication authentication) throws Exception {
+	public ResponseEntity<?> updateUser (@Valid @RequestBody UpdateUserEntityDTO updatedUser, Authentication authentication) throws Exception {
 		
 		String email = authentication.getName();
 		UserEntity loggedUser = userRepository.findByEmail(email);
@@ -136,7 +137,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			userRepository.save(regularUser);
 			
-			return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(regularUser, updatedUser.getConfirmedPassword()), HttpStatus.OK);
+			return new ResponseEntity<UpdateUserEntityDTO>(new UpdateUserEntityDTO(regularUser), HttpStatus.OK);
 		} else if(loggedUser.getRole().equals("ROLE_ADMIN")) {
 			AdminEntity admin = (AdminEntity) loggedUser;
 			
@@ -165,7 +166,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			userRepository.save(admin);
 			
-			return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin, updatedUser.getConfirmedPassword()), HttpStatus.OK);
+			return new ResponseEntity<UpdateUserEntityDTO>(new UpdateUserEntityDTO(admin), HttpStatus.OK);
 		}
 		
 		
