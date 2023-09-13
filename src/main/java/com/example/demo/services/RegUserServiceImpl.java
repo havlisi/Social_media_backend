@@ -79,9 +79,8 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		UserEntity existingUsername = userRepository.findByUsername(newUser.getUsername());
 		
-		if (existingUsername != null) {
+		if (existingUsername != null)
 			throw new UserWithUsernameExistsException("Username already exists");
-		}
 		
 		user.setUsername(newUser.getUsername());
 		
@@ -116,15 +115,11 @@ public class RegUserServiceImpl implements RegularUserService {
 		AdminEntity admin = (AdminEntity) loggedUser;
 		
 		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
-			
-			
-			if (updatedUser.getFirstName() != null) {
+			if (updatedUser.getFirstName() != null)
 				regularUser.setFirstName(updatedUser.getFirstName());
-			}
 			
-			if (updatedUser.getLastName() != null) {
+			if (updatedUser.getLastName() != null)
 				regularUser.setLastName(updatedUser.getLastName());
-			}
 			
 			if (updatedUser.getUsername() != null) {
 				if (!regularUser.getUsername().equals(updatedUser.getUsername())) {

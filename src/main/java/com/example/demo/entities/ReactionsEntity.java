@@ -39,7 +39,6 @@ public class ReactionsEntity {
 			@JoinColumn(name = "Reaction_id", nullable = false, updatable = false)} , inverseJoinColumns = {
 					@JoinColumn(name = "Comment_id", nullable = false, updatable = false) })
 	private List<Comments> comments;
-
 	public ReactionsEntity() {
 		super();
 	}

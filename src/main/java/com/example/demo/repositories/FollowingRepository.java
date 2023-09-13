@@ -9,7 +9,7 @@ import com.example.demo.entities.RegularUserEntity;
 
 public interface FollowingRepository extends CrudRepository<Following, Integer> {
 
-	List<RegularUserEntity> findAllByFollowerId(Integer id);
+	List<Following> findAllByFollowerId(Integer id);
 
 	Optional<Following> findByFollowerAndFollowee(RegularUserEntity loggedUser, RegularUserEntity followedUser);
 	
