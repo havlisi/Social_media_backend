@@ -1,43 +1,56 @@
 package com.example.demo.entities;
 
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "Following")
+@Table(name = "following_users")
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Following {
 	
-	@Column
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-	@JoinTable(name = "PostReactions", joinColumns = {
-			@JoinColumn(name = "Following_id", nullable = false, updatable = false)} , inverseJoinColumns = {
-					@JoinColumn(name = "RegularUser_id", nullable = false, updatable = false) })
-	private List<RegularUserEntity> regularUsers;
-
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+	
+	private RegularUserEntity followerId;
+	private RegularUserEntity followeeId;
+	
 	public Following() {
 		super();
 	}
-	
-	public Following(List<RegularUserEntity> regularUsers) {
+
+	public Following(RegularUserEntity followerId, RegularUserEntity followeeId) {
 		super();
-		this.regularUsers = regularUsers;
+		this.followerId = followerId;
+		this.followeeId = followeeId;
 	}
 
-	public List<RegularUserEntity> getRegularUsers() {
-		return regularUsers;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setRegularUsers(List<RegularUserEntity> regularUsers) {
-		this.regularUsers = regularUsers;
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public RegularUserEntity getFollowerId() {
+		return followerId;
+	}
+
+	public void setFollowerId(RegularUserEntity followerId) {
+		this.followerId = followerId;
+	}
+
+	public RegularUserEntity getFolloweeId() {
+		return followeeId;
+	}
+
+	public void setFolloweeId(RegularUserEntity followeeId) {
+		this.followeeId = followeeId;
 	}
 
 }

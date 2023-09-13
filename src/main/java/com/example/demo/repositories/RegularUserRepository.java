@@ -4,5 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.example.demo.entities.RegularUserEntity;
 
 public interface RegularUserRepository extends CrudRepository<RegularUserEntity, Integer>{
+
+	RegularUserEntity findByEmail(String email);
 	
 }
