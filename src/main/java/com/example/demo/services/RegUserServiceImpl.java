@@ -19,6 +19,8 @@ import com.example.demo.entities.dto.RegularUserEntityDTO;
 import com.example.demo.entities.dto.UpdateUserEntityDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.entities.dto.UserEntityDTO;
+import com.example.demo.exceptions.CantFollowSelfException;
+import com.example.demo.exceptions.FollowingExistsException;
 import com.example.demo.exceptions.NonExistingEmailException;
 import com.example.demo.exceptions.PasswordConfirmationException;
 import com.example.demo.exceptions.UnauthorizedUserException;
@@ -217,8 +219,14 @@ public class RegUserServiceImpl implements RegularUserService {
 			throw new UserNotFoundException("User with that id not found");
 		}
 		
+		if (loggedUser.getId() == followedUser.get().getId()) {
+			Optional<Following> followExist = followingRepository.findByFollowerAndFollowee(loggedUser, followedUser.get());
+			if (followExist.isPresent()) {
+				throw new FollowingExistsException("User is already following this user");
+			}
+			throw new CantFollowSelfException("User can't follow himself");
+		}
 		followingRepository.save(new Following(loggedUser, followedUser.get()));
-		
 		return ("Successfully followed " + followedUser.get().getUsername());
 		
 	}
