@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import com.example.demo.entities.AdminEntity;
+import com.example.demo.entities.Following;
 import com.example.demo.entities.RegularUserEntity;
 import com.example.demo.entities.UserEntity;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
@@ -27,6 +26,7 @@ import com.example.demo.exceptions.UserWithEmailExistsException;
 import com.example.demo.exceptions.UserWithUsernameExistsException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.repositories.AdminRepository;
+import com.example.demo.repositories.FollowingRepository;
 import com.example.demo.repositories.RegularUserRepository;
 import com.example.demo.repositories.UserRepository;
 
@@ -47,6 +47,9 @@ public class RegUserServiceImpl implements RegularUserService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	FollowingRepository followingRepository;
 	
 	public List<RegularUserEntity> getAll() throws Exception {
 		List<RegularUserEntity> users = (List<RegularUserEntity>) regularUserRepository.findAll();
@@ -203,6 +206,22 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		return "Successfully deleted user";
 	}
+
+	public String followUserById(Integer id, Authentication authentication) throws Exception {
+		String email = authentication.getName();
+		RegularUserEntity loggedUser = regularUserRepository.findByEmail(email);
+		
+		Optional<RegularUserEntity> followedUser = regularUserRepository.findById(id);
+		
+		if (followedUser.isEmpty()) {
+			throw new UserNotFoundException("User with that id not found");
+		}
+		
+		followingRepository.save(new Following(loggedUser, followedUser.get()));
+		
+		return ("Successfully followed " + followedUser);
+		
+	}
 	
 	public String forgotPassword(@RequestBody UserEmailDTO user) throws Exception {
 		
@@ -231,5 +250,6 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		throw new UserNotFoundException("User with that id not found");
 	}
+
 
 }

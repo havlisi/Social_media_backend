@@ -87,6 +87,16 @@ public class RegularUserController {
 		}
 	}
 	
+	@Secured("ROLE_REGULAR_USER")
+	@RequestMapping(method = RequestMethod.PUT, path = "/{id}")
+	public ResponseEntity<?> followUserById(@PathVariable Integer id, Authentication authentication) throws Exception {
+		try {
+			return new ResponseEntity<>(regUserServiceImpl.followUserById(id, authentication), HttpStatus.OK);
+		} catch (UserNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
+	
 	@RequestMapping(method = RequestMethod.PUT, path = "/forgot-password")
 	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDTO user) throws Exception {
 		try {

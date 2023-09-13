@@ -6,6 +6,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -22,7 +25,7 @@ public class RegularUserEntity extends UserEntity {
 	@Column
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<PostEntity> posts;
-
+	
 	public RegularUserEntity() {
 		super();
 	}
@@ -33,8 +36,9 @@ public class RegularUserEntity extends UserEntity {
 			@NotNull(message = "Username must be provided.") @Size(min = 5, max = 25, message = "Username must be between {min} and {max} characters long.") String username,
 			@NotNull(message = "Please provide email address.") @Email(message = "Email is not valid.") String email,
 			@NotNull(message = "Password must be provided.") @Size(min = 5, message = "Password must be minimum {min} characters long.") String password,
-			String role) {
+			String role, List<PostEntity> posts) {
 		super(id, firstName, lastName, username, email, password, role);
+		this.posts = posts;
 	}
 
 	public List<PostEntity> getPosts() {
