@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entities.UserEntity;
+import com.example.demo.exceptions.PostNotFoundException;
 import com.example.demo.exceptions.UnauthorizedUserException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.repositories.UserRepository;
@@ -33,17 +34,17 @@ public class PostController {
 		}
 	}
 	
-//	@Secured("ROLE_REGULAR_USER")
-//	@RequestMapping(method = RequestMethod.GET)
-//	public ResponseEntity<?> getAllByFollowingUser(Authentication authentication) throws Exception {
-//		try {
-//			return new ResponseEntity<>(postServiceImpl.getAllByFollowingUser(authentication), HttpStatus.OK);
-//		} catch (UserNotFoundException e) {
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//		} catch (UnauthorizedUserException e) {
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-//		}
-//	}
+	@Secured("ROLE_REGULAR_USER")
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<?> getAllPostsForHomePage(Authentication authentication) throws Exception {
+		try {
+			return new ResponseEntity<>(postServiceImpl.getAllPostsForHomePage(authentication), HttpStatus.OK);
+		} catch (PostNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		} catch (UserNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+		}
+	}
 	
 	//resi do kraja post
 	@Secured("ROLE_REGULAR_USER")

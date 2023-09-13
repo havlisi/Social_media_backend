@@ -219,7 +219,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		followingRepository.save(new Following(loggedUser, followedUser.get()));
 		
-		return ("Successfully followed " + followedUser);
+		return ("Successfully followed " + followedUser.get().getUsername());
 		
 	}
 	
