@@ -5,10 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.entities.UserEntity;
+
+import com.example.demo.entities.dto.CommentDTO;
+import com.example.demo.entities.dto.PostDTO;
 import com.example.demo.exceptions.PostNotFoundException;
 import com.example.demo.exceptions.UnauthorizedUserException;
 import com.example.demo.exceptions.UserNotFoundException;
@@ -35,7 +38,7 @@ public class PostController {
 	}
 	
 	@Secured("ROLE_REGULAR_USER")
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET, path = "/homepage")
 	public ResponseEntity<?> getAllPostsForHomePage(Authentication authentication) throws Exception {
 		try {
 			return new ResponseEntity<>(postServiceImpl.getAllPostsForHomePage(authentication), HttpStatus.OK);
@@ -46,19 +49,22 @@ public class PostController {
 		}
 	}
 	
-	//resi do kraja post
 	@Secured("ROLE_REGULAR_USER")
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> createPost (Authentication authentication) {
-		
-		String email = authentication.getClass().getName();
-		UserEntity loggedUser = userRepository.findByEmail(email);
-		
-		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
-			
+	public ResponseEntity<?> createPost(@RequestBody PostDTO newPost, Authentication authentication) throws Exception {
+		try {
+			return new ResponseEntity<>(postServiceImpl.createPost(newPost, authentication), HttpStatus.CREATED);
+		} catch (UnauthorizedUserException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
-		
-		return null;
 	}
+	
+	@Secured("ROLE_REGULAR_USER")
+	@RequestMapping(method = RequestMethod.PUT)
+	public ResponseEntity<?> addComment(@RequestBody CommentDTO newComment, Authentication authentication) throws Exception {
+		return new ResponseEntity<>(postServiceImpl.addComment(newComment, authentication), HttpStatus.CREATED);
+	}
+	
+	//metoda za dodavanje reakcja na post
 
 }

@@ -3,6 +3,7 @@ package com.example.demo.entities;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,6 +26,9 @@ public class Comments {
 	@JsonProperty("ID")
 	private Integer id;
 	
+	@Column
+	private String comment;
+	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "regularUser")
 	private RegularUserEntity regularUser;
@@ -43,9 +47,11 @@ public class Comments {
 		super();
 	}
 
-	public Comments(Integer id, RegularUserEntity regularUser, List<ReactionsEntity> reactions, PostEntity post) {
+	public Comments(Integer id, String comment, RegularUserEntity regularUser, List<ReactionsEntity> reactions,
+			PostEntity post) {
 		super();
 		this.id = id;
+		this.comment = comment;
 		this.regularUser = regularUser;
 		this.reactions = reactions;
 		this.post = post;
@@ -57,6 +63,14 @@ public class Comments {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 	public RegularUserEntity getRegularUser() {

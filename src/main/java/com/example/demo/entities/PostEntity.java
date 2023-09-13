@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -36,12 +37,14 @@ public class PostEntity {
 	private List<Comments> comments;
 	
 	@Column
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	@JoinTable(name = "PostReactions", joinColumns = {
 			@JoinColumn(name = "Post_id", nullable = false, updatable = false)} , inverseJoinColumns = {
 					@JoinColumn(name = "Reaction_id", nullable = false, updatable = false) })
 	private List<ReactionsEntity> reactions;
 	
+	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "regularUser")
 	private RegularUserEntity regularUser;
