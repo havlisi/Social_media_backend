@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
 import com.example.demo.entities.dto.UpdateUserEntityDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
+import com.example.demo.exceptions.CantFollowSelfException;
+import com.example.demo.exceptions.FollowingExistsException;
 import com.example.demo.exceptions.NonExistingEmailException;
 import com.example.demo.exceptions.PasswordConfirmationException;
 import com.example.demo.exceptions.UnauthorizedUserException;
@@ -93,6 +95,10 @@ public class RegularUserController {
 			return new ResponseEntity<>(regUserServiceImpl.followUserById(id, authentication), HttpStatus.OK);
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		} catch (FollowingExistsException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (CantFollowSelfException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
 	
