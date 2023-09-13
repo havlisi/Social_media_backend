@@ -48,24 +48,24 @@ public class RegUserServiceImpl implements RegularUserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	public ResponseEntity<?> getAll() throws Exception {
+	public List<RegularUserEntity> getAll() throws Exception {
 		List<RegularUserEntity> users = (List<RegularUserEntity>) regularUserRepository.findAll();
 		if (users.isEmpty()) {
 			throw new UserNotFoundException("No users found");
 		}
-		return new ResponseEntity<>(users, HttpStatus.OK);
+		return users;
 	}
 	
-	public ResponseEntity<?> getById(@PathVariable Integer id) throws Exception {
+	public Optional<RegularUserEntity> getById(@PathVariable Integer id) throws Exception {
 		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
 		if (user.isEmpty()) {
 			throw new UserNotFoundException("User with that id not found");
 		}
-		return new ResponseEntity<>(user, HttpStatus.OK);
+		return user;
 	}
 	
 	@RequestMapping(method = RequestMethod.POST) 
-	public ResponseEntity<?> createRegularUser (@Valid @RequestBody RegularUserEntityDTO newUser) throws Exception {
+	public UserEntityDTO createRegularUser (@Valid @RequestBody RegularUserEntityDTO newUser) throws Exception {
 		
 		RegularUserEntity user = new RegularUserEntity();
 		
@@ -99,74 +99,92 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		userRepository.save(user);
 		
-		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(user, newUser.getConfirmedPassword()), HttpStatus.CREATED);
+		return new UserEntityDTO(user, newUser.getConfirmedPassword());
 	}
 	
-	public ResponseEntity<?> updateUser (@Valid @RequestBody UpdateUserEntityDTO updatedUser, Authentication authentication) throws Exception {
+	public UpdateUserEntityDTO updateUser (@Valid @RequestBody UpdateUserEntityDTO updatedUser, Authentication authentication) throws Exception {
 		
 		String email = authentication.getName();
 		UserEntity loggedUser = userRepository.findByEmail(email);
 		
+		RegularUserEntity regularUser = (RegularUserEntity) loggedUser;
+		AdminEntity admin = (AdminEntity) loggedUser;
+		
 		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
-			RegularUserEntity regularUser = (RegularUserEntity) loggedUser;
 			
-			//dodati za svaki ikad field da li je null ako nije da se setuju podaci
 			
-			regularUser.setFirstName(updatedUser.getFirstName());
-			regularUser.setLastName(updatedUser.getLastName());
-			
-			if (!regularUser.getUsername().equals(updatedUser.getUsername())) {
-				UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
-				
-				if (existingUsername != null) {
-					throw new UserWithUsernameExistsException("Username already exists");
-				}
+			if (updatedUser.getFirstName() != null) {
+				regularUser.setFirstName(updatedUser.getFirstName());
 			}
 			
-			regularUser.setUsername(updatedUser.getUsername());
-			
-			if (!regularUser.getEmail().equals(updatedUser.getEmail())) {
-				UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
-				
-				if (existingEmailUser != null) {
-					throw new UserWithEmailExistsException("Email already exists");
-				}
+			if (updatedUser.getLastName() != null) {
+				regularUser.setLastName(updatedUser.getLastName());
 			}
 			
-			regularUser.setEmail(updatedUser.getEmail());
+			if (updatedUser.getUsername() != null) {
+				if (!regularUser.getUsername().equals(updatedUser.getUsername())) {
+					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
+					
+					if (existingUsername != null) {
+						throw new UserWithUsernameExistsException("Username already exists");
+					}
+				}
+				
+				regularUser.setUsername(updatedUser.getUsername());
+			}
+			
+			if (updatedUser.getEmail() != null) {
+				if (!regularUser.getEmail().equals(updatedUser.getEmail())) {
+					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+					
+					if (existingEmailUser != null) {
+						throw new UserWithEmailExistsException("Email already exists");
+					}
+				}
+				
+				regularUser.setEmail(updatedUser.getEmail());
+			}
 			
 			userRepository.save(regularUser);
 			
-			return new ResponseEntity<UpdateUserEntityDTO>(new UpdateUserEntityDTO(regularUser), HttpStatus.OK);
+			return new UpdateUserEntityDTO(regularUser);
 		} else if(loggedUser.getRole().equals("ROLE_ADMIN")) {
-			AdminEntity admin = (AdminEntity) loggedUser;
-			
-			admin.setFirstName(updatedUser.getFirstName());
-			admin.setLastName(updatedUser.getLastName());
-			
-			if (!admin.getUsername().equals(updatedUser.getUsername())) {
-				UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
-				
-				if (existingUsername != null) {
-					throw new UserWithUsernameExistsException("Username already exists");
-				}
+
+			if (updatedUser.getFirstName() != null) {
+				admin.setFirstName(updatedUser.getFirstName());
 			}
 			
-			admin.setUsername(updatedUser.getUsername());
-			
-			if (!admin.getEmail().equals(updatedUser.getEmail())) {
-				UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
-				
-				if (existingEmailUser != null) {
-					throw new UserWithEmailExistsException("Email already exists");
-				}
+			if (updatedUser.getLastName() != null) {
+				admin.setLastName(updatedUser.getLastName());
 			}
 			
-			admin.setEmail(updatedUser.getEmail());
+			if (updatedUser.getUsername() != null) {
+				if (!admin.getUsername().equals(updatedUser.getUsername())) {
+					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
+					
+					if (existingUsername != null) {
+						throw new UserWithUsernameExistsException("Username already exists");
+					}
+				}
+				admin.setUsername(updatedUser.getUsername());
+			}
+			
+			
+			if (updatedUser.getEmail() != null) {
+				if (!admin.getEmail().equals(updatedUser.getEmail())) {
+					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+					
+					if (existingEmailUser != null) {
+						throw new UserWithEmailExistsException("Email already exists");
+					}
+				}
+				admin.setEmail(updatedUser.getEmail());
+			}
+			
 			
 			userRepository.save(admin);
 			
-			return new ResponseEntity<UpdateUserEntityDTO>(new UpdateUserEntityDTO(admin), HttpStatus.OK);
+			return new UpdateUserEntityDTO(admin);
 		}
 		
 		
@@ -174,7 +192,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 	}
 
-	public ResponseEntity<?> deleteById(@PathVariable Integer id) throws Exception {
+	public String deleteById(@PathVariable Integer id) throws Exception {
 		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
 	
 		if (user.isEmpty()) {
@@ -183,10 +201,10 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		regularUserRepository.delete(user.get());
 		
-		return new ResponseEntity<>("Successfully deleted user", HttpStatus.OK);
+		return "Successfully deleted user";
 	}
 	
-	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDTO user) throws Exception {
+	public String forgotPassword(@RequestBody UserEmailDTO user) throws Exception {
 		
 		UserEntity loggedUser = userRepository.findByEmail(user.getEmail());
 		
@@ -200,7 +218,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			admin.setPassword((passwordEncoder.encode(newPass)));
 			adminRepository.save(admin);
 			emailServiceImpl.sendNewMail("isidorahavlovic@gmail.com", newPass);
-			return new ResponseEntity<>(HttpStatus.OK);
+			return "New password has been sent to admin";
 		}
 		else if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
 			RegularUserEntity regUser = (RegularUserEntity) loggedUser;
@@ -208,7 +226,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			regUser.setPassword((passwordEncoder.encode(newPass)));
 			userRepository.save(regUser);
 			emailServiceImpl.sendNewMail("isidorahavlovic@gmail.com", newPass);
-			return new ResponseEntity<>(HttpStatus.OK);
+			return "New password has been sent to regular user";
 		}
 		
 		throw new UserNotFoundException("User with that id not found");

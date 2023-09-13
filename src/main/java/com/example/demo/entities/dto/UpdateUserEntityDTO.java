@@ -2,7 +2,6 @@ package com.example.demo.entities.dto;
 
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import com.example.demo.entities.UserEntity;
 
@@ -10,22 +9,18 @@ public class UpdateUserEntityDTO {
 	
 	private Integer id;
 	
-	@NotNull(message = "First name must be provided.")
 	@Size(min = 2, max = 30, message = "First name must be between "
 			+ "{min} and {max} characters long.")
 	private String firstName;
 	
-	@NotNull(message = "Last name must be provided.")
 	@Size(min = 2, max = 30, message = "Last name must be between "
 			+ "{min} and {max} characters long.")
 	private String lastName;
 
-	@NotNull(message = "Username must be provided.")
 	@Size(min = 5, max = 25, message = "Username must be between "
 			+ "{min} and {max} characters long.")
 	private String username;
 	
-	@NotNull(message = "Please provide email address.")
 	@Email(message = "Email is not valid.")
 	private String email;
 	

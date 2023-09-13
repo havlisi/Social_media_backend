@@ -1,5 +1,7 @@
 package com.example.demo.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
+import com.example.demo.entities.dto.UpdateUserEntityDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.exceptions.NonExistingEmailException;
 import com.example.demo.exceptions.PasswordConfirmationException;
@@ -31,7 +34,7 @@ public class RegularUserController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() throws Exception {
 		try {
-			return regUserServiceImpl.getAll();
+			return new ResponseEntity<>(regUserServiceImpl.getAll(), HttpStatus.OK);
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -41,16 +44,16 @@ public class RegularUserController {
 	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable Integer id) throws Exception {
 		try {
-			return regUserServiceImpl.getById(id);
+			return new ResponseEntity<>(regUserServiceImpl.getById(id), HttpStatus.OK);
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 	
 	@RequestMapping(method = RequestMethod.POST) 
-	public ResponseEntity<?> createRegularUser (@RequestBody RegularUserEntityDTO newUser) throws Exception {
+	public ResponseEntity<?> createRegularUser (@Valid @RequestBody RegularUserEntityDTO newUser) throws Exception {
 		try {
-			return regUserServiceImpl.createRegularUser(newUser);
+			return new ResponseEntity<>(regUserServiceImpl.createRegularUser(newUser), HttpStatus.CREATED);
 		} catch (UserWithEmailExistsException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (UserWithUsernameExistsException e) {
@@ -62,10 +65,9 @@ public class RegularUserController {
 	
 	@Secured({"ROLE_ADMIN", "ROLE_REGULAR_USER"})
 	@RequestMapping(method = RequestMethod.PUT) 
-	public ResponseEntity<?> updateUser (@RequestBody RegularUserEntityDTO updatedUser, Authentication authentication) throws Exception {
+	public ResponseEntity<?> updateUser (@Valid @RequestBody UpdateUserEntityDTO updatedUser, Authentication authentication) throws Exception {
 		try {
-			//dodati if true da vrati objekat
-			return regUserServiceImpl.updateUser(updatedUser, authentication);
+			return new ResponseEntity<>(regUserServiceImpl.updateUser(updatedUser, authentication), HttpStatus.OK);
 		} catch (UserWithEmailExistsException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (UserWithUsernameExistsException e) {
@@ -79,7 +81,7 @@ public class RegularUserController {
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) throws Exception {
 		try {
-			return regUserServiceImpl.deleteById(id);
+			return new ResponseEntity<>(regUserServiceImpl.deleteById(id), HttpStatus.OK);
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -88,7 +90,7 @@ public class RegularUserController {
 	@RequestMapping(method = RequestMethod.PUT, path = "/forgot-password")
 	public ResponseEntity<?> forgotPassword(@RequestBody UserEmailDTO user) throws Exception {
 		try {
-			return regUserServiceImpl.forgotPassword(user);
+			return new ResponseEntity<>(regUserServiceImpl.forgotPassword(user), HttpStatus.OK);
 		} catch (NonExistingEmailException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (UserNotFoundException e) {
