@@ -219,13 +219,16 @@ public class RegUserServiceImpl implements RegularUserService {
 			throw new UserNotFoundException("User with that id not found");
 		}
 		
+		Optional<Following> followExist = followingRepository.findByFollowerAndFollowee(loggedUser, followedUser.get());
+		
+		if (followExist.isPresent()) {
+			throw new FollowingExistsException("User is already following this user");
+		}
+		
 		if (loggedUser.getId() == followedUser.get().getId()) {
-			Optional<Following> followExist = followingRepository.findByFollowerAndFollowee(loggedUser, followedUser.get());
-			if (followExist.isPresent()) {
-				throw new FollowingExistsException("User is already following this user");
-			}
 			throw new CantFollowSelfException("User can't follow himself");
 		}
+		
 		followingRepository.save(new Following(loggedUser, followedUser.get()));
 		return ("Successfully followed " + followedUser.get().getUsername());
 		
