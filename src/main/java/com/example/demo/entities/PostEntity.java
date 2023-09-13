@@ -37,7 +37,6 @@ public class PostEntity {
 	private List<Comments> comments;
 	
 	@Column
-	@JsonIgnore
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	@JoinTable(name = "PostReactions", joinColumns = {
 			@JoinColumn(name = "Post_id", nullable = false, updatable = false)} , inverseJoinColumns = {
