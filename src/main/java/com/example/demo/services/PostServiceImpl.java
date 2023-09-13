@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import com.example.demo.entities.Following;
 import com.example.demo.entities.PostEntity;
 import com.example.demo.entities.RegularUserEntity;
 import com.example.demo.entities.dto.PostDTO;
-import com.example.demo.exceptions.PostNotFoundException;
 import com.example.demo.exceptions.UnauthorizedUserException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.repositories.FollowingRepository;
@@ -31,6 +31,8 @@ public class PostServiceImpl implements PostService {
 	@Autowired
 	FollowingRepository followingRepository;
 
+	// TODO: ispraviti sve nazive metoda da budu kraci
+	
 	public List<PostEntity> getAll() throws Exception {
 		List<PostEntity> posts = (List<PostEntity>) postRepository.findAll();
 		if (posts.isEmpty()) {
@@ -46,34 +48,25 @@ public class PostServiceImpl implements PostService {
 			
 		List<PostEntity> posts = new ArrayList<>();
 		
-		if (posts.isEmpty()) {
-			throw new PostNotFoundException("No posts found in the database");
-		}
-		
-		List<RegularUserEntity> followees = followingRepository.findAllByFollowerId(loggedUser.getId());
+		List<Following> followees = followingRepository.findAllByFollowerId(loggedUser.getId());
 		
 		if (followees.isEmpty()) {
 			throw new UserNotFoundException("No followees found in the database");
 		}
 		
-		for (RegularUserEntity followee : followees) {
-			posts.addAll(followee.getPosts()); 
+		for (Following followee : followees) {
+			posts.addAll(followee.getFollowee().getPosts()); 
 		}
 		
 		return posts;
 
 	}
 	
-	public static final String FIND_PROJECTS = "SELECT email FROM user_entity";
-	
-	@Query(value = FIND_PROJECTS, nativeQuery = true)
 	@RequestMapping(method = RequestMethod.POST)
 	public PostDTO createPost(@RequestBody PostDTO newPost, Authentication authentication) throws Exception {
 		 
 		String email = authentication.getName();
 		RegularUserEntity loggedUser = regularUserRepository.findByEmail(email);
-		
-		System.out.println(loggedUser);
 		
 		PostEntity post = new PostEntity();
 		

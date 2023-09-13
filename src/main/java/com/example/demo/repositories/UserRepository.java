@@ -2,6 +2,8 @@ package com.example.demo.repositories;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import com.example.demo.entities.UserEntity;
 

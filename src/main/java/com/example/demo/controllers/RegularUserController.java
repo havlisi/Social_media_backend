@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +27,14 @@ import com.example.demo.exceptions.UserWithUsernameExistsException;
 import com.example.demo.services.RegUserServiceImpl;
 
 @RestController
-@RequestMapping(path = "api/v1/regular-user")
+@RequestMapping(path = "api/v1/regular-users")// TODO: sec config ispravi rutu
 public class RegularUserController {
 	
 	@Autowired
 	private RegUserServiceImpl regUserServiceImpl;
 	
 	@Secured("ROLE_ADMIN")
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)// TODO: kraca verzija mappinga
 	public ResponseEntity<?> getAll() throws Exception {
 		try {
 			return new ResponseEntity<>(regUserServiceImpl.getAll(), HttpStatus.OK);
