@@ -1,7 +1,7 @@
 package com.example.demo.entities.dto;
 
 import java.util.List;
-import com.example.demo.entities.Comments;
+import com.example.demo.entities.Comment;
 import com.example.demo.entities.Post;
 import com.example.demo.entities.Reactions;
 
@@ -12,7 +12,7 @@ private Integer id;
 	
 	private String content;
 	
-	private List<Comments> comments;
+	private List<Comment> comments;
 	
 	private List<Reactions> reactions;
 	
@@ -56,11 +56,11 @@ private Integer id;
 		this.content = content;
 	}
 
-	public List<Comments> getComments() {
+	public List<Comment> getComments() {
 		return comments;
 	}
 
-	public void setComments(List<Comments> comments) {
+	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
 

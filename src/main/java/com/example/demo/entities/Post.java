@@ -27,7 +27,7 @@ public class Post {
 	private String content;
 	
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Comments> comments;
+	private List<Comment> comments;
 	
 	@OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Reactions> reactions;
@@ -41,7 +41,7 @@ public class Post {
 		super();
 	}
 
-	public Post(Integer id, String title, String content, List<Comments> comments,
+	public Post(Integer id, String title, String content, List<Comment> comments,
 			List<Reactions> reactions, RegularUser regularUser) {
 		super();
 		this.id = id;
@@ -76,11 +76,11 @@ public class Post {
 		this.content = content;
 	}
 
-	public List<Comments> getComments() {
+	public List<Comment> getComments() {
 		return comments;
 	}
 
-	public void setComments(List<Comments> comments) {
+	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
 

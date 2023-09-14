@@ -1,5 +1,7 @@
 package com.example.demo.entities.dto;
 
+import com.example.demo.entities.Comment;
+
 public class CommentDTO {
 
 	private String comment;
@@ -8,9 +10,9 @@ public class CommentDTO {
 		super();
 	}
 	
-	public CommentDTO(String comment) {
+	public CommentDTO(Comment c) {
 		super();
-		this.comment = comment;
+		this.comment = c.getComment();
 	}
 
 	public String getComment() {

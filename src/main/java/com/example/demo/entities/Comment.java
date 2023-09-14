@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Comments {
+public class Comment {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,11 +35,11 @@ public class Comments {
 	@JoinColumn(name = "post")
 	private Post post;
 
-	public Comments() {
+	public Comment() {
 		super();
 	}
 
-	public Comments(Integer id, String comment, RegularUser regularUser, List<Reactions> reactions,
+	public Comment(Integer id, String comment, RegularUser regularUser, List<Reactions> reactions,
 			Post post) {
 		super();
 		this.id = id;

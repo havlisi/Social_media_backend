@@ -6,10 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.entities.dto.CommentDTO;
 import com.example.demo.entities.dto.PostDTO;
 import com.example.demo.exceptions.PostNotFoundException;
 import com.example.demo.exceptions.UnauthorizedUserException;
@@ -58,12 +62,16 @@ public class PostController {
 		}
 	}
 	
-//	@Secured("ROLE_REGULAR_USER")
-//	@PutMapping
-//	public ResponseEntity<?> addComment(@RequestBody CommentDTO newComment, Authentication authentication) throws Exception {
-//		return new ResponseEntity<>(postServiceImpl.addComment(newComment, authentication), HttpStatus.CREATED);
-//	}
-//	
+	@Secured("ROLE_REGULAR_USER")
+	@PutMapping("/{id}")
+	public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestBody CommentDTO newComment, Authentication authentication) throws Exception {
+		try {
+			return new ResponseEntity<>(postServiceImpl.addComment(id, newComment, authentication.getName()), HttpStatus.CREATED);
+		} catch (UnauthorizedUserException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+		}
+	}
+	
 	//metoda za dodavanje reakcja na post
 
 }
