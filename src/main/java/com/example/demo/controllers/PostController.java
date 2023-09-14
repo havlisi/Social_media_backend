@@ -72,6 +72,14 @@ public class PostController {
 		}
 	}
 	
-	//metoda za dodavanje reakcja na post
+//	@Secured("ROLE_REGULAR_USER") 
+//	@PutMapping("/{id}")
+//	public ResponseEntity<?> addReaction(@PathVariable Integer id, @RequestBody ReactionDTO newComment, Authentication authentication) throws Exception {
+//		try {
+//			return new ResponseEntity<>(postServiceImpl.addComment(id, newComment, authentication.getName()), HttpStatus.CREATED);
+//		} catch (UnauthorizedUserException e) {
+//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+//		}
+//	}
 
 }
