@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.demo.entities.dto.CommentDTO;
 import com.example.demo.entities.dto.PostDTO;
 import com.example.demo.exceptions.PostNotFoundException;
@@ -72,14 +71,23 @@ public class PostController {
 		}
 	}
 	
-//	@Secured("ROLE_REGULAR_USER") 
-//	@PutMapping("/{id}")
-//	public ResponseEntity<?> addReaction(@PathVariable Integer id, @RequestBody ReactionDTO newComment, Authentication authentication) throws Exception {
-//		try {
-//			return new ResponseEntity<>(postServiceImpl.addComment(id, newComment, authentication.getName()), HttpStatus.CREATED);
-//		} catch (UnauthorizedUserException e) {
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-//		}
-//	}
+	@Secured("ROLE_REGULAR_USER") 
+	@PutMapping("/like/{id}")
+	public ResponseEntity<?> addLikeReaction(@PathVariable Integer id, Authentication authentication) throws Exception {
+		try {
+			return new ResponseEntity<>(postServiceImpl.addLikeReaction(id, authentication.getName()), HttpStatus.CREATED);
+		} catch (UnauthorizedUserException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+		}
+	}
 
+	@Secured("ROLE_REGULAR_USER") 
+	@PutMapping("/dislike/{id}")
+	public ResponseEntity<?> addDislikeReaction(@PathVariable Integer id, Authentication authentication) throws Exception {
+		try {
+			return new ResponseEntity<>(postServiceImpl.addDislikeReaction(id, authentication.getName()), HttpStatus.CREATED);
+		} catch (UnauthorizedUserException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+		}
+	}
 }

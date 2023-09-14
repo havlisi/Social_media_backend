@@ -32,7 +32,7 @@ public class Comment {
 	private RegularUser regularUser;
 	
 	@OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Reactions> reactions;
+	private List<Reaction> reactions;
 
 	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -43,7 +43,7 @@ public class Comment {
 		super();
 	}
 
-	public Comment(Integer id, String comment, RegularUser regularUser, List<Reactions> reactions,
+	public Comment(Integer id, String comment, RegularUser regularUser, List<Reaction> reactions,
 			Post post) {
 		super();
 		this.id = id;
@@ -77,11 +77,11 @@ public class Comment {
 		this.regularUser = regularUser;
 	}
 
-	public List<Reactions> getReactions() {
+	public List<Reaction> getReactions() {
 		return reactions;
 	}
 
-	public void setReactions(List<Reactions> reactions) {
+	public void setReactions(List<Reaction> reactions) {
 		this.reactions = reactions;
 	}
 

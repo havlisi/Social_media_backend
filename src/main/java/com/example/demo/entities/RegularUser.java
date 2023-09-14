@@ -20,7 +20,7 @@ public class RegularUser extends User {
 	private List<Comment> comments;
 	
 	@OneToMany(mappedBy = "regularUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Reactions> reactions;
+	private List<Reaction> reactions;
 	
 	@OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Following> followers;
@@ -32,7 +32,7 @@ public class RegularUser extends User {
 		super();
 	}
 
-	public RegularUser(List<Post> posts, List<Comment> comments, List<Reactions> reactions,
+	public RegularUser(List<Post> posts, List<Comment> comments, List<Reaction> reactions,
 			List<Following> followers, List<Following> followees) {
 		super();
 		this.posts = posts;
@@ -58,11 +58,11 @@ public class RegularUser extends User {
 		this.comments = comments;
 	}
 
-	public List<Reactions> getReactions() {
+	public List<Reaction> getReactions() {
 		return reactions;
 	}
 
-	public void setReactions(List<Reactions> reactions) {
+	public void setReactions(List<Reaction> reactions) {
 		this.reactions = reactions;
 	}
 

@@ -3,7 +3,7 @@ package com.example.demo.entities.dto;
 import java.util.List;
 import com.example.demo.entities.Comment;
 import com.example.demo.entities.Post;
-import com.example.demo.entities.Reactions;
+import com.example.demo.entities.Reaction;
 
 public class PostDTO {
 	
@@ -15,7 +15,7 @@ public class PostDTO {
 	
 	private List<Comment> comments;
 	
-	private List<Reactions> reactions;
+	private List<Reaction> reactions;
 	
 	private Integer regularUser;
 
@@ -65,11 +65,11 @@ public class PostDTO {
 		this.comments = comments;
 	}
 
-	public List<Reactions> getReactions() {
+	public List<Reaction> getReactions() {
 		return reactions;
 	}
 
-	public void setReactions(List<Reactions> reactions) {
+	public void setReactions(List<Reaction> reactions) {
 		this.reactions = reactions;
 	}
 
