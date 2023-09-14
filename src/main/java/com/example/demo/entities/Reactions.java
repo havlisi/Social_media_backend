@@ -32,14 +32,14 @@ public class Reactions {
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "comments")
-	private Comments comments;
+	private Comment comments;
 	
 	public Reactions() {
 		super();
 	}
 
 	public Reactions(Integer id, String reaction, Post post, RegularUser regularUser,
-			Comments comments) {
+			Comment comments) {
 		super();
 		this.id = id;
 		this.reaction = reaction;
@@ -80,11 +80,11 @@ public class Reactions {
 		this.regularUser = regularUser;
 	}
 
-	public Comments getComments() {
+	public Comment getComments() {
 		return comments;
 	}
 
-	public void setComments(Comments comments) {
+	public void setComments(Comment comments) {
 		this.comments = comments;
 	}
 	
