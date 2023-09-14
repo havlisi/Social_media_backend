@@ -1,18 +1,14 @@
 package com.example.demo.entities;
 import java.util.List;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,21 +22,14 @@ public class PostEntity {
 	@JsonProperty("ID")
 	private Integer id;
 	
-	@Column
 	private String title;
 	
-	@Column
 	private String content;
 	
-	@Column
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Comments> comments;
 	
-	@Column
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-	@JoinTable(name = "PostReactions", joinColumns = {
-			@JoinColumn(name = "Post_id", nullable = false, updatable = false)} , inverseJoinColumns = {
-					@JoinColumn(name = "Reaction_id", nullable = false, updatable = false) })
+	@OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ReactionsEntity> reactions;
 	
 	@JsonIgnore
