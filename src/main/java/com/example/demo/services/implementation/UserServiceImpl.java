@@ -53,6 +53,6 @@ public class UserServiceImpl  implements UserService {
 			
 			return userLogin;
 		}
-		throw new UnauthorizedUserException("User is not authorized to update this user");
+		throw new UnauthorizedUserException("Unauthorized user");
 	}
 }

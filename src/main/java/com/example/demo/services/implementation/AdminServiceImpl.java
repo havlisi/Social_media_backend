@@ -69,13 +69,6 @@ public class AdminServiceImpl implements AdminService {
 		
 		admin.setRole("ROLE_ADMIN");
 		
-		System.out.println(newUser.getFirstName());
-		System.out.println(newUser.getLastName());
-		System.out.println(newUser.getUsername());
-		System.out.println(newUser.getEmail());
-		System.out.println(newUser.getPassword());
-		System.out.println(newUser.getConfirmedPassword());
-		
 		if (!newUser.getPassword().equals(newUser.getConfirmedPassword())) {
 			return new ResponseEntity<>("Password must be same as confirmed password", HttpStatus.BAD_REQUEST);
 		}
