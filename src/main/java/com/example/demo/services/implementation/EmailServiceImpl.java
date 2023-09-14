@@ -1,9 +1,11 @@
-package com.example.demo.services;
+package com.example.demo.services.implementation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.services.EmailService;
 
 @Service
 public class EmailServiceImpl implements EmailService {

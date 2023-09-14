@@ -15,14 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.User;
 import com.example.demo.entities.dto.UserTokenDTO;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.services.implementation.UserServiceImpl;
 import com.example.demo.util.Encryption;
 import io.jsonwebtoken.Jwts;
 
 @RestController
-@RequestMapping(path = "api/v1/user")
+@RequestMapping(path = "api/v1/users")
 public class UserController {
 	
 	@Autowired
@@ -33,8 +34,12 @@ public class UserController {
 	
 	@Value("${spring.security.token-duration}")
 	private Integer tokenDuration;
+
+	@Autowired
+	private UserServiceImpl userServiceImpl;
 	
-	private String getJWTToken(UserEntity userEntity) {
+	
+	private String getJWTToken(User userEntity) {
 		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
 				.commaSeparatedStringToAuthorityList(userEntity.getRole());
 		String token = Jwts.builder().setId("softtekJWT").setSubject(userEntity.getEmail())
@@ -50,7 +55,7 @@ public class UserController {
 	public ResponseEntity<?> login(@RequestBody Map<String, String> korisnikLogger) {
 		String email = korisnikLogger.get("email");
 		String password = korisnikLogger.get("password");
-		UserEntity user = userRepository.findByEmail(email);
+		User user = userRepository.findByEmail(email);
 		if (user != null && Encryption.validatePassword(password, user.getPassword())) {
 			String token = getJWTToken(user);
 			UserTokenDTO userLogin = new UserTokenDTO(user.getId(), email, token, user.getRole());

@@ -1,9 +1,8 @@
 package com.example.demo.entities.dto;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
-import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.User;
 
 public class UpdateUserEntityDTO {
 	
@@ -24,20 +23,16 @@ public class UpdateUserEntityDTO {
 	@Email(message = "Email is not valid.")
 	private String email;
 	
-	@Column(nullable = false)
-	private String role;
-	
 	public UpdateUserEntityDTO() {
 	}
 
-	public UpdateUserEntityDTO(UserEntity u) {
+	public UpdateUserEntityDTO(User u) {
 		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();
 		this.email = u.getEmail();
 		this.username = u.getUsername();
 		this.firstName = u.getFirstName();
-		this.role = u.getRole();
 	}
 
 	public Integer getId() {
@@ -80,12 +75,4 @@ public class UpdateUserEntityDTO {
 		this.email = email;
 	}
 
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-	
 }

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class PostEntity {
+public class Post {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,19 +30,19 @@ public class PostEntity {
 	private List<Comments> comments;
 	
 	@OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<ReactionsEntity> reactions;
+	private List<Reactions> reactions;
 	
 	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "regularUser")
-	private RegularUserEntity regularUser;
+	private RegularUser regularUser;
 
-	public PostEntity() {
+	public Post() {
 		super();
 	}
 
-	public PostEntity(Integer id, String title, String content, List<Comments> comments,
-			List<ReactionsEntity> reactions, RegularUserEntity regularUser) {
+	public Post(Integer id, String title, String content, List<Comments> comments,
+			List<Reactions> reactions, RegularUser regularUser) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -84,19 +84,19 @@ public class PostEntity {
 		this.comments = comments;
 	}
 
-	public List<ReactionsEntity> getReactions() {
+	public List<Reactions> getReactions() {
 		return reactions;
 	}
 
-	public void setReactions(List<ReactionsEntity> reactions) {
+	public void setReactions(List<Reactions> reactions) {
 		this.reactions = reactions;
 	}
 
-	public RegularUserEntity getRegularUser() {
+	public RegularUser getRegularUser() {
 		return regularUser;
 	}
 
-	public void setRegularUser(RegularUserEntity regularUser) {
+	public void setRegularUser(RegularUser regularUser) {
 		this.regularUser = regularUser;
 	}
 	

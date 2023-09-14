@@ -2,12 +2,11 @@ package com.example.demo.entities.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import com.example.demo.entities.PostEntity;
-import com.example.demo.entities.RegularUserEntity;
+import com.example.demo.entities.Post;
+import com.example.demo.entities.RegularUser;
 
 public class RegularUserEntityDTO {
 	
@@ -41,16 +40,14 @@ public class RegularUserEntityDTO {
 //	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
 	private String confirmedPassword;
 	
-	@Column(nullable = false)
 	private String role;
 	
-	@Column
-	private List<PostEntity> posts;
+	private List<Post> posts;
 	
 	public RegularUserEntityDTO() {
 	}
 
-	public RegularUserEntityDTO(RegularUserEntity u, String confirmedPassword) {
+	public RegularUserEntityDTO(RegularUser u, String confirmedPassword) {
 		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();
@@ -59,8 +56,8 @@ public class RegularUserEntityDTO {
 		this.confirmedPassword = confirmedPassword;
 		this.username = u.getUsername();
 		this.role = u.getRole();
-		List<PostEntity> posts = new ArrayList<>();
-		for (PostEntity post : u.getPosts()) {
+		List<Post> posts = new ArrayList<>();
+		for (Post post : u.getPosts()) {
 			posts.add(post);
 		}
 	}
@@ -121,11 +118,11 @@ public class RegularUserEntityDTO {
 		this.role = role;
 	}
 
-	public List<PostEntity> getPosts() {
+	public List<Post> getPosts() {
 		return posts;
 	}
 
-	public void setPosts(List<PostEntity> posts) {
+	public void setPosts(List<Post> posts) {
 		this.posts = posts;
 	}
 

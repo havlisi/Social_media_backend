@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "admin")
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-public class AdminEntity extends UserEntity  {
+public class Admin extends User  {
 
-	public AdminEntity() {
+	public Admin() {
 		super();
 	}
 
-	public AdminEntity(Integer id,
+	public Admin(Integer id,
 			@NotNull(message = "First name must be provided.") @Size(min = 2, max = 30, message = "First name must be between {min} and {max} characters long.") String firstName,
 			@NotNull(message = "Last name must be provided.") @Size(min = 2, max = 30, message = "Last name must be between {min} and {max} characters long.") String lastName,
 			@NotNull(message = "Username must be provided.") @Size(min = 5, max = 25, message = "Username must be between {min} and {max} characters long.") String username,

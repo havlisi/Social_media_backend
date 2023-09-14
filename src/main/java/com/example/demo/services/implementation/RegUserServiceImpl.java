@@ -1,20 +1,14 @@
-package com.example.demo.services;
+package com.example.demo.services.implementation;
 
 import java.util.List;
 import java.util.Optional;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import com.example.demo.entities.AdminEntity;
+import com.example.demo.entities.Admin;
 import com.example.demo.entities.Following;
-import com.example.demo.entities.RegularUserEntity;
-import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.RegularUser;
+import com.example.demo.entities.User;
 import com.example.demo.entities.dto.RegularUserEntityDTO;
 import com.example.demo.entities.dto.UpdateUserEntityDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
@@ -31,6 +25,7 @@ import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.FollowingRepository;
 import com.example.demo.repositories.RegularUserRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.services.RegularUserService;
 
 @Service
 public class RegUserServiceImpl implements RegularUserService {
@@ -53,38 +48,37 @@ public class RegUserServiceImpl implements RegularUserService {
 	@Autowired
 	FollowingRepository followingRepository;
 	
-	public List<RegularUserEntity> getAll() throws Exception {
-		List<RegularUserEntity> users = (List<RegularUserEntity>) regularUserRepository.findAll();
+	public List<RegularUser> getAll() throws Exception {
+		List<RegularUser> users = (List<RegularUser>) regularUserRepository.findAll();
 		if (users.isEmpty()) {
 			throw new UserNotFoundException("No users found");
 		}
 		return users;
 	}
 	
-	public Optional<RegularUserEntity> getById(@PathVariable Integer id) throws Exception {
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
+	public Optional<RegularUser> getById(Integer id) throws Exception {
+		Optional<RegularUser> user = regularUserRepository.findById(id);
 		if (user.isEmpty()) {
 			throw new UserNotFoundException("User with that id not found");
 		}
 		return user;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST) 
-	public UserEntityDTO createRegularUser (@Valid @RequestBody RegularUserEntityDTO newUser) throws Exception {
+	public UserEntityDTO create(RegularUserEntityDTO newUser) throws Exception {
 		
-		RegularUserEntity user = new RegularUserEntity();
+		RegularUser user = new RegularUser();
 		
 		user.setFirstName(newUser.getFirstName());
 		user.setLastName(newUser.getLastName());
 		
-		UserEntity existingUsername = userRepository.findByUsername(newUser.getUsername());
+		User existingUsername = userRepository.findByUsername(newUser.getUsername());
 		
 		if (existingUsername != null)
 			throw new UserWithUsernameExistsException("Username already exists");
 		
 		user.setUsername(newUser.getUsername());
 		
-		UserEntity existingEmailUser = userRepository.findByEmail(newUser.getEmail());
+		User existingEmailUser = userRepository.findByEmail(newUser.getEmail());
 		
 		if (existingEmailUser != null) {
 			throw new UserWithEmailExistsException("Email already exists");
@@ -106,13 +100,12 @@ public class RegUserServiceImpl implements RegularUserService {
 		return new UserEntityDTO(user, newUser.getConfirmedPassword());
 	}
 	
-	public UpdateUserEntityDTO updateUser (@Valid @RequestBody UpdateUserEntityDTO updatedUser, Authentication authentication) throws Exception {
+	public UpdateUserEntityDTO update(UpdateUserEntityDTO updatedUser, String name) throws Exception {
 		
-		String email = authentication.getName();
-		UserEntity loggedUser = userRepository.findByEmail(email);
+		User loggedUser = userRepository.findByEmail(name);
 		
-		RegularUserEntity regularUser = (RegularUserEntity) loggedUser;
-		AdminEntity admin = (AdminEntity) loggedUser;
+		RegularUser regularUser = (RegularUser) loggedUser;
+		Admin admin = (Admin) loggedUser;
 		
 		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
 			if (updatedUser.getFirstName() != null)
@@ -123,7 +116,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			if (updatedUser.getUsername() != null) {
 				if (!regularUser.getUsername().equals(updatedUser.getUsername())) {
-					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
+					User existingUsername = userRepository.findByUsername(updatedUser.getUsername());
 					
 					if (existingUsername != null) {
 						throw new UserWithUsernameExistsException("Username already exists");
@@ -135,7 +128,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			if (updatedUser.getEmail() != null) {
 				if (!regularUser.getEmail().equals(updatedUser.getEmail())) {
-					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+					User existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
 					
 					if (existingEmailUser != null) {
 						throw new UserWithEmailExistsException("Email already exists");
@@ -160,7 +153,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			if (updatedUser.getUsername() != null) {
 				if (!admin.getUsername().equals(updatedUser.getUsername())) {
-					UserEntity existingUsername = userRepository.findByUsername(updatedUser.getUsername());
+					User existingUsername = userRepository.findByUsername(updatedUser.getUsername());
 					
 					if (existingUsername != null) {
 						throw new UserWithUsernameExistsException("Username already exists");
@@ -172,7 +165,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			if (updatedUser.getEmail() != null) {
 				if (!admin.getEmail().equals(updatedUser.getEmail())) {
-					UserEntity existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
+					User existingEmailUser = userRepository.findByEmail(updatedUser.getEmail());
 					
 					if (existingEmailUser != null) {
 						throw new UserWithEmailExistsException("Email already exists");
@@ -192,8 +185,8 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 	}
 
-	public String deleteById(@PathVariable Integer id) throws Exception {
-		Optional<RegularUserEntity> user = regularUserRepository.findById(id);
+	public String deleteById(Integer id) throws Exception {
+		Optional<RegularUser> user = regularUserRepository.findById(id);
 	
 		if (user.isEmpty()) {
 			throw new UserNotFoundException("User with that id not found");
@@ -204,11 +197,11 @@ public class RegUserServiceImpl implements RegularUserService {
 		return "Successfully deleted user";
 	}
 
-	public String followUserById(Integer id, Authentication authentication) throws Exception {
-		String email = authentication.getName();
-		RegularUserEntity loggedUser = regularUserRepository.findByEmail(email);
+	public String followUserById(Integer id, String name) throws Exception {
 		
-		Optional<RegularUserEntity> followedUser = regularUserRepository.findById(id);
+		RegularUser loggedUser = regularUserRepository.findByEmail(name);
+		
+		Optional<RegularUser> followedUser = regularUserRepository.findById(id);
 		
 		if (followedUser.isEmpty()) {
 			throw new UserNotFoundException("User with that id not found");
@@ -229,16 +222,16 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 	}
 	
-	public String forgotPassword(@RequestBody UserEmailDTO user) throws Exception {
+	public String forgotPassword(UserEmailDTO user) throws Exception {
 		
-		UserEntity loggedUser = userRepository.findByEmail(user.getEmail());
+		User loggedUser = userRepository.findByEmail(user.getEmail());
 		
 		if (loggedUser == null) {
 			throw new NonExistingEmailException("Email doesn't exist.");
 		}
 		
 		if(loggedUser.getRole().equals("ROLE_ADMIN")) {
-			AdminEntity admin = (AdminEntity) loggedUser;
+			Admin admin = (Admin) loggedUser;
 			String newPass = "password123";
 			admin.setPassword((passwordEncoder.encode(newPass)));
 			adminRepository.save(admin);
@@ -246,7 +239,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			return "New password has been sent to admin";
 		}
 		else if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
-			RegularUserEntity regUser = (RegularUserEntity) loggedUser;
+			RegularUser regUser = (RegularUser) loggedUser;
 			String newPass = "password321";
 			regUser.setPassword((passwordEncoder.encode(newPass)));
 			userRepository.save(regUser);

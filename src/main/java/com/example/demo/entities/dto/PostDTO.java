@@ -1,14 +1,9 @@
 package com.example.demo.entities.dto;
 
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 import com.example.demo.entities.Comments;
-import com.example.demo.entities.PostEntity;
-import com.example.demo.entities.ReactionsEntity;
-import com.example.demo.entities.RegularUserEntity;
+import com.example.demo.entities.Post;
+import com.example.demo.entities.Reactions;
 
 public class PostDTO {
 private Integer id;
@@ -19,7 +14,7 @@ private Integer id;
 	
 	private List<Comments> comments;
 	
-	private List<ReactionsEntity> reactions;
+	private List<Reactions> reactions;
 	
 	private Integer regularUser;
 
@@ -27,7 +22,7 @@ private Integer id;
 		super();
 	}
 
-	public PostDTO(PostEntity p) {
+	public PostDTO(Post p) {
 		super();
 		this.id = p.getId();
 		this.title = p.getTitle();
@@ -69,11 +64,11 @@ private Integer id;
 		this.comments = comments;
 	}
 
-	public List<ReactionsEntity> getReactions() {
+	public List<Reactions> getReactions() {
 		return reactions;
 	}
 
-	public void setReactions(List<ReactionsEntity> reactions) {
+	public void setReactions(List<Reactions> reactions) {
 		this.reactions = reactions;
 	}
 

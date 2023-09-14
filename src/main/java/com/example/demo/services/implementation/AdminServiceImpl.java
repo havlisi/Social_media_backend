@@ -1,4 +1,4 @@
-package com.example.demo.services;
+package com.example.demo.services.implementation;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,13 +9,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import com.example.demo.entities.AdminEntity;
-import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.Admin;
+import com.example.demo.entities.User;
 import com.example.demo.entities.dto.UserEntityDTO;
 import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.services.AdminService;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -29,33 +28,30 @@ public class AdminServiceImpl implements AdminService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() {
-		List<AdminEntity> admins = (List<AdminEntity>) adminRepository.findAll();
+		List<Admin> admins = (List<Admin>) adminRepository.findAll();
 		if (admins.isEmpty()) {
 			return new ResponseEntity<>("No admin users found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(admins, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable Integer id) {
-		Optional<AdminEntity> admin = adminRepository.findById(id);
+		Optional<Admin> admin = adminRepository.findById(id);
 		if (admin.isEmpty()) {
 			return new ResponseEntity<>("Admin with that id not found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(admin, HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST) 
-	public ResponseEntity<?> createAdmin (@RequestBody UserEntityDTO newUser) {
+	public ResponseEntity<?> create (@RequestBody UserEntityDTO newUser) {
 		
-		AdminEntity admin = new AdminEntity();
+		Admin admin = new Admin();
 		
 		admin.setFirstName(newUser.getFirstName());
 		admin.setLastName(newUser.getLastName());
 		
-		UserEntity existingUsername = userRepository.findByUsername(newUser.getUsername());
+		User existingUsername = userRepository.findByUsername(newUser.getUsername());
 		
 		if (existingUsername != null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -63,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
 		
 		admin.setUsername(newUser.getUsername());
 		
-		UserEntity existingEmailUser = userRepository.findByEmail(newUser.getEmail());
+		User existingEmailUser = userRepository.findByEmail(newUser.getEmail());
 		
 		if (existingEmailUser != null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -92,9 +88,8 @@ public class AdminServiceImpl implements AdminService {
 		return new ResponseEntity<UserEntityDTO>(new UserEntityDTO(admin, newUser.getConfirmedPassword()), HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
-		Optional<AdminEntity> admin = adminRepository.findById(id);
+		Optional<Admin> admin = adminRepository.findById(id);
 		if (admin.isEmpty()) {
 			return new ResponseEntity<>("Admin not found", HttpStatus.NOT_FOUND);
 		}

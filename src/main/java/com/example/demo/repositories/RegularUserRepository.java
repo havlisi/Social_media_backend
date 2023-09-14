@@ -1,10 +1,10 @@
 package com.example.demo.repositories;
 
 import org.springframework.data.repository.CrudRepository;
-import com.example.demo.entities.RegularUserEntity;
+import com.example.demo.entities.RegularUser;
 
-public interface RegularUserRepository extends CrudRepository<RegularUserEntity, Integer>{
+public interface RegularUserRepository extends CrudRepository<RegularUser, Integer>{
 
-	RegularUserEntity findByEmail(String email);
+	RegularUser findByEmail(String email);
 	
 }

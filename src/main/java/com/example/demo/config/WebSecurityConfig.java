@@ -41,11 +41,11 @@ public class WebSecurityConfig {
 				.csrf().disable()
 				.addFilterAfter(new JWTAuthorizationFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
 				.authorizeRequests()
-				.antMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/v1/regular-user").permitAll()
-				.antMatchers(HttpMethod.PUT, "/api/v1/regular-user/forgot-password").permitAll()
-				.antMatchers(HttpMethod.POST, "/api/v1/admin").permitAll()
-				.antMatchers(HttpMethod.GET, "api/v1/regular-user/{id}").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/regular-users").permitAll()
+				.antMatchers(HttpMethod.PUT, "/api/v1/regular-users/forgot-password").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/v1/admins").permitAll()
+				.antMatchers(HttpMethod.GET, "api/v1/regular-users/{id}").permitAll()
 				.anyRequest().authenticated();
 		return http.build();
 	}

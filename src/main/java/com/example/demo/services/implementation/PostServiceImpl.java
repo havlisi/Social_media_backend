@@ -1,23 +1,19 @@
-package com.example.demo.services;
+package com.example.demo.services.implementation;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import com.example.demo.entities.Following;
-import com.example.demo.entities.PostEntity;
-import com.example.demo.entities.RegularUserEntity;
+import com.example.demo.entities.Post;
+import com.example.demo.entities.RegularUser;
 import com.example.demo.entities.dto.PostDTO;
 import com.example.demo.exceptions.UnauthorizedUserException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.repositories.FollowingRepository;
 import com.example.demo.repositories.PostRepository;
 import com.example.demo.repositories.RegularUserRepository;
+import com.example.demo.services.PostService;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -30,23 +26,20 @@ public class PostServiceImpl implements PostService {
 	
 	@Autowired
 	FollowingRepository followingRepository;
-
-	// TODO: ispraviti sve nazive metoda da budu kraci
 	
-	public List<PostEntity> getAll() throws Exception {
-		List<PostEntity> posts = (List<PostEntity>) postRepository.findAll();
+	public List<Post> getAll() throws Exception {
+		List<Post> posts = (List<Post>) postRepository.findAll();
 		if (posts.isEmpty()) {
 			throw new UserNotFoundException("No posts found");
 		}
 		return posts;
 	}
 
-	public List<PostEntity> getAllPostsForHomePage(Authentication authentication) throws Exception {
+	public List<Post> getAllForHomePage(String name) throws Exception {
 		
-		String email = authentication.getName();
-		RegularUserEntity loggedUser = regularUserRepository.findByEmail(email);
-			
-		List<PostEntity> posts = new ArrayList<>();
+		RegularUser loggedUser = regularUserRepository.findByEmail(name);
+		
+		List<Post> posts = new ArrayList<>();
 		
 		List<Following> followees = followingRepository.findAllByFollowerId(loggedUser.getId());
 		
@@ -62,13 +55,11 @@ public class PostServiceImpl implements PostService {
 
 	}
 	
-	@RequestMapping(method = RequestMethod.POST)
-	public PostDTO createPost(@RequestBody PostDTO newPost, Authentication authentication) throws Exception {
+	public PostDTO create(PostDTO newPost, String name) throws Exception {
 		 
-		String email = authentication.getName();
-		RegularUserEntity loggedUser = regularUserRepository.findByEmail(email);
+		RegularUser loggedUser = regularUserRepository.findByEmail(name);
 		
-		PostEntity post = new PostEntity();
+		Post post = new Post();
 		
 		if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
 		
@@ -82,5 +73,4 @@ public class PostServiceImpl implements PostService {
 		throw new UnauthorizedUserException("User is not authorized to update this user");
 	}
 	
-
 }
