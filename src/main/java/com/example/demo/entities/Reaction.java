@@ -15,18 +15,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Reactions {
+public class Reaction {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@JsonProperty("ID")
 	private Integer id;
-	
-	private Boolean isLiked;
-	
-	private Boolean isDisiked;
-	
-	private enum Reaction {LIKE, DISLIKE}
+
+	private ReactionEnum reactionType;
 
 	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -43,38 +39,17 @@ public class Reactions {
 	@JoinColumn(name = "comments")
 	private Comment comments;
 	
-	public Reactions() {
+	public Reaction() {
 		super();
 	}
 
-	public Reactions(Integer id, Boolean isLiked, Boolean isDisiked, Post post, RegularUser regularUser,
-			Comment comments) {
+	public Reaction(Integer id, ReactionEnum reactionType, Post post, RegularUser regularUser, Comment comments) {
 		super();
 		this.id = id;
-		this.isLiked = isLiked;
-		this.isDisiked = isDisiked;
+		this.reactionType = reactionType;
 		this.post = post;
 		this.regularUser = regularUser;
 		this.comments = comments;
-	}
-
-	public Boolean getIsDisiked() {
-		if (Reaction.DISLIKE != null) {
-			return true;
-		}
-		return false;
-	}
-
-	public void setIsDisiked(Boolean isDisiked) {
-		this.isDisiked = isDisiked;
-	}
-
-	public Boolean getIsLiked() {
-		return isLiked;
-	}
-
-	public void setIsLiked(Boolean isLiked) {
-		this.isLiked = isLiked;
 	}
 
 	public Integer getId() {
@@ -83,6 +58,14 @@ public class Reactions {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public ReactionEnum getReactionType() {
+		return reactionType;
+	}
+
+	public void setReactionType(ReactionEnum reactionType) {
+		this.reactionType = reactionType;
 	}
 
 	public Post getPost() {

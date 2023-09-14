@@ -1,22 +1,24 @@
 package com.example.demo.entities.dto;
 
+import com.example.demo.entities.ReactionEnum;
+
 public class ReactionDTO {
 	
 	private Integer id;
 	
-	private String reaction;
-	
 	private Integer regularUser;
+	
+	private ReactionEnum reactionType;
 	
 	public ReactionDTO() {
 		super();
 	}
 
-	public ReactionDTO(Integer id, String reaction, Integer regularUser) {
+	public ReactionDTO(Integer id, Integer regularUser, ReactionEnum reactionType) {
 		super();
 		this.id = id;
-		this.reaction = reaction;
 		this.regularUser = regularUser;
+		this.reactionType = reactionType;
 	}
 
 	public Integer getId() {
@@ -27,20 +29,20 @@ public class ReactionDTO {
 		this.id = id;
 	}
 
-	public String getReaction() {
-		return reaction;
-	}
-
-	public void setReaction(String reaction) {
-		this.reaction = reaction;
-	}
-
 	public Integer getRegularUser() {
 		return regularUser;
 	}
 
 	public void setRegularUser(Integer regularUser) {
 		this.regularUser = regularUser;
+	}
+
+	public ReactionEnum getReactionType() {
+		return reactionType;
+	}
+
+	public void setReactionType(ReactionEnum reactionType) {
+		this.reactionType = reactionType;
 	}
 
 }
