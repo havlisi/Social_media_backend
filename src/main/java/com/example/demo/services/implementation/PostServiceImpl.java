@@ -171,10 +171,22 @@ public class PostServiceImpl implements PostService {
 					throw new PostNotFoundException("No posts found");
 				}
 				
-			
 				Optional<Reaction> existingReaction = reactionRepository.findByPostAndRegularUser(post.get(), loggedUser);
 				
-				if (existingReaction.isEmpty()) {
+				if (existingReaction.get().getReactionType() == null || existingReaction.get().getReactionType() == ReactionEnum.LIKE) {
+					existingReaction.get().setReactionType(ReactionEnum.DISLIKE);
+
+					reactionRepository.save(existingReaction.get());
+					ArrayList<Reaction> postReactions = new ArrayList<>(post.get().getReactions());
+					postReactions.add(existingReaction.get());
+					postRepository.save(post.get());
+					
+				} else if (existingReaction.get().getReactionType() == ReactionEnum.DISLIKE){
+					existingReaction.get().setReactionType(null);
+					reactionRepository.save(existingReaction.get());
+					postRepository.save(post.get());
+				} else {
+					// proveriti jel sad dobro - debag
 					Reaction reaction = new Reaction();
 					reaction.setPost(post.get());
 					reaction.setRegularUser(loggedUser);
@@ -183,19 +195,6 @@ public class PostServiceImpl implements PostService {
 					reactionRepository.save(reaction);
 					ArrayList<Reaction> postReactions = new ArrayList<>(post.get().getReactions());
 					postReactions.add(reaction);
-					postRepository.save(post.get());
-					
-				} else if (existingReaction.get().getReactionType() == null || existingReaction.get().getReactionType() == ReactionEnum.LIKE) {
-					existingReaction.get().setReactionType(ReactionEnum.DISLIKE);
-
-					reactionRepository.save(existingReaction.get());
-					ArrayList<Reaction> postReactions = new ArrayList<>(post.get().getReactions());
-					postReactions.add(existingReaction.get());
-					postRepository.save(post.get());
-					
-				} else {
-					existingReaction.get().setReactionType(null);
-					reactionRepository.save(existingReaction.get());
 					postRepository.save(post.get());
 				}
 				
