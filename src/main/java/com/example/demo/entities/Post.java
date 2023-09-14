@@ -29,7 +29,7 @@ public class Post {
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Comment> comments;
 	
-	@OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Reaction> reactions;
 	
 	@JsonIgnore

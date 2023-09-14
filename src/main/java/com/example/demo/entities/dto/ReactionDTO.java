@@ -1,5 +1,6 @@
 package com.example.demo.entities.dto;
 
+import com.example.demo.entities.Reaction;
 import com.example.demo.entities.ReactionEnum;
 
 public class ReactionDTO {
@@ -14,11 +15,11 @@ public class ReactionDTO {
 		super();
 	}
 
-	public ReactionDTO(Integer id, Integer regularUser, ReactionEnum reactionType) {
+	public ReactionDTO(Reaction r) {
 		super();
-		this.id = id;
-		this.regularUser = regularUser;
-		this.reactionType = reactionType;
+		this.id = r.getId();
+		this.regularUser = r.getRegularUser().getId();
+		this.reactionType = r.getReactionType();
 	}
 
 	public Integer getId() {

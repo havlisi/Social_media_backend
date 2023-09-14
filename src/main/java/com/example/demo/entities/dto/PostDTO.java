@@ -28,9 +28,9 @@ public class PostDTO {
 		this.id = p.getId();
 		this.title = p.getTitle();
 		this.content = p.getContent();
-		this.reactions = p.getReactions();
 		this.regularUser = p.getRegularUser().getId();
 		this.comments = p.getComments();
+		this.reactions = p.getReactions();
 	}
 
 	public Integer getId() {
@@ -64,6 +64,14 @@ public class PostDTO {
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
+	
+	public Integer getRegularUser() {
+		return regularUser;
+	}
+
+	public void setRegularUser(Integer regularUser) {
+		this.regularUser = regularUser;
+	}
 
 	public List<Reaction> getReactions() {
 		return reactions;
@@ -71,14 +79,6 @@ public class PostDTO {
 
 	public void setReactions(List<Reaction> reactions) {
 		this.reactions = reactions;
-	}
-
-	public Integer getRegularUser() {
-		return regularUser;
-	}
-
-	public void setRegularUser(Integer regularUser) {
-		this.regularUser = regularUser;
 	}
 
 }
