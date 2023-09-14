@@ -6,7 +6,8 @@ import com.example.demo.entities.Post;
 import com.example.demo.entities.Reactions;
 
 public class PostDTO {
-private Integer id;
+	
+	private Integer id;
 	
 	private String title;
 	
@@ -27,9 +28,9 @@ private Integer id;
 		this.id = p.getId();
 		this.title = p.getTitle();
 		this.content = p.getContent();
-		this.comments = p.getComments();
 		this.reactions = p.getReactions();
 		this.regularUser = p.getRegularUser().getId();
+		this.comments = p.getComments();
 	}
 
 	public Integer getId() {

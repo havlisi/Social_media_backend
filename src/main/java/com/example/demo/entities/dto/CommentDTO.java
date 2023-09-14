@@ -3,6 +3,8 @@ package com.example.demo.entities.dto;
 import com.example.demo.entities.Comment;
 
 public class CommentDTO {
+	
+	private Integer id;
 
 	private String comment;
 
