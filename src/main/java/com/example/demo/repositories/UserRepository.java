@@ -5,16 +5,16 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.User;
 
-public interface UserRepository extends CrudRepository<UserEntity, Integer> {
+public interface UserRepository extends CrudRepository<User, Integer> {
 
-	public List<UserEntity> findAll();
+	public List<User> findAll();
 
-	public Optional<UserEntity> findById(Integer id);
+	public Optional<User> findById(Integer id);
 
-	public UserEntity findByEmail(String email);
+	public User findByEmail(String email);
 
-	public UserEntity findByUsername(String username);
+	public User findByUsername(String username);
 	
 }

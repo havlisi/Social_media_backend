@@ -22,23 +22,23 @@ public class Following {
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "follower")
-	private RegularUserEntity follower;
+	private RegularUser follower;
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "followee")
-	private RegularUserEntity followee;
+	private RegularUser followee;
 
 	public Following() {
 		super();
 	}
 	
-	public Following(RegularUserEntity follower, RegularUserEntity followee) {
+	public Following(RegularUser follower, RegularUser followee) {
 		super();
 		this.follower = follower;
 		this.followee = followee;
 	}
 
-	public Following(Integer id, RegularUserEntity follower, RegularUserEntity followee) {
+	public Following(Integer id, RegularUser follower, RegularUser followee) {
 		super();
 		this.id = id;
 		this.follower = follower;
@@ -53,19 +53,19 @@ public class Following {
 		this.id = id;
 	}
 
-	public RegularUserEntity getFollower() {
+	public RegularUser getFollower() {
 		return follower;
 	}
 
-	public void setFollower(RegularUserEntity follower) {
+	public void setFollower(RegularUser follower) {
 		this.follower = follower;
 	}
 
-	public RegularUserEntity getFollowee() {
+	public RegularUser getFollowee() {
 		return followee;
 	}
 
-	public void setFollowee(RegularUserEntity followee) {
+	public void setFollowee(RegularUser followee) {
 		this.followee = followee;
 	}
 

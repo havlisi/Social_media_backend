@@ -26,21 +26,21 @@ public class Comments {
 	
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "regularUser")
-	private RegularUserEntity regularUser;
+	private RegularUser regularUser;
 	
 	@OneToMany(mappedBy = "comments", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<ReactionsEntity> reactions;
+	private List<Reactions> reactions;
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "post")
-	private PostEntity post;
+	private Post post;
 
 	public Comments() {
 		super();
 	}
 
-	public Comments(Integer id, String comment, RegularUserEntity regularUser, List<ReactionsEntity> reactions,
-			PostEntity post) {
+	public Comments(Integer id, String comment, RegularUser regularUser, List<Reactions> reactions,
+			Post post) {
 		super();
 		this.id = id;
 		this.comment = comment;
@@ -65,27 +65,27 @@ public class Comments {
 		this.comment = comment;
 	}
 
-	public RegularUserEntity getRegularUser() {
+	public RegularUser getRegularUser() {
 		return regularUser;
 	}
 
-	public void setRegularUser(RegularUserEntity regularUser) {
+	public void setRegularUser(RegularUser regularUser) {
 		this.regularUser = regularUser;
 	}
 
-	public List<ReactionsEntity> getReactions() {
+	public List<Reactions> getReactions() {
 		return reactions;
 	}
 
-	public void setReactions(List<ReactionsEntity> reactions) {
+	public void setReactions(List<Reactions> reactions) {
 		this.reactions = reactions;
 	}
 
-	public PostEntity getPost() {
+	public Post getPost() {
 		return post;
 	}
 
-	public void setPost(PostEntity post) {
+	public void setPost(Post post) {
 		this.post = post;
 	}
 

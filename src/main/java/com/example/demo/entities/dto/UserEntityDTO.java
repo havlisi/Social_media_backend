@@ -1,10 +1,9 @@
 package com.example.demo.entities.dto;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import com.example.demo.entities.UserEntity;
+import com.example.demo.entities.User;
 
 public class UserEntityDTO {
 	
@@ -38,13 +37,12 @@ public class UserEntityDTO {
 //	@Pattern(regexp = "^(?=.*[@#$%^&+=])\\S+$", message = "Password must include at least one special character")
 	private String confirmedPassword;
 	
-	@Column(nullable = false)
 	private String role;
 	
 	public UserEntityDTO() {
 	}
 
-	public UserEntityDTO(UserEntity u, String confirmedPassword) {
+	public UserEntityDTO(User u, String confirmedPassword) {
 		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();

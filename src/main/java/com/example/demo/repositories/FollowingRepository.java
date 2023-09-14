@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import com.example.demo.entities.Following;
-import com.example.demo.entities.RegularUserEntity;
+import com.example.demo.entities.RegularUser;
 
 public interface FollowingRepository extends CrudRepository<Following, Integer> {
 
 	List<Following> findAllByFollowerId(Integer id);
 
-	Optional<Following> findByFollowerAndFollowee(RegularUserEntity loggedUser, RegularUserEntity followedUser);
+	Optional<Following> findByFollowerAndFollowee(RegularUser loggedUser, RegularUser followedUser);
 	
 }
