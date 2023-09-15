@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.example.demo.entities.Comment;
 import com.example.demo.entities.Following;
@@ -50,7 +53,7 @@ public class PostServiceImpl implements PostService {
 		return posts;
 	}
 
-	public List<Post> getAllForHomePage(String name) throws Exception {
+	public List<PostDTO> getAllForHomePage(String name) throws Exception {
 		
 		RegularUser loggedUser = regularUserRepository.findByEmail(name);
 		
@@ -66,11 +69,19 @@ public class PostServiceImpl implements PostService {
 			posts.addAll(followee.getFollowee().getPosts()); 
 		}
 		
-		return posts;
+		Pageable firstPageWithTwoElements = PageRequest.of(0, 3);
+		Page<Post> pagePosts = postRepository.findAll(firstPageWithTwoElements);
+		
+		ArrayList<PostDTO> pagePostsDTO = new ArrayList<>();
+		
+		for (Post post : pagePosts) {
+			PostDTO postDTO = new PostDTO(post);
+			pagePostsDTO.add(postDTO);
+		}
+		
+		return pagePostsDTO;
 
 	}
-	
-	//paginacija i na homepage i search
 
 	public ArrayList<PostDTO> searchByTitle(String title) throws Exception {
 		
@@ -93,6 +104,8 @@ public class PostServiceImpl implements PostService {
 			}
 		}
 		
+		//paginacija na search
+		
 		return filteredPosts;
 	}
 	
@@ -105,7 +118,6 @@ public class PostServiceImpl implements PostService {
 			post.setTitle(newPost.getTitle());
 			post.setContent(newPost.getContent());
 			post.setRegularUser(loggedUser);
-			post.setComments(null);
 			postRepository.save(post);
 			return new PostDTO(post);
 		}
@@ -230,5 +242,6 @@ public class PostServiceImpl implements PostService {
 			
 			throw new UnauthorizedUserException("User is not authorized to update this user");
 		}
+
 	
 }
