@@ -29,13 +29,22 @@ public class PostDTO {
 		this.title = p.getTitle();
 		this.content = p.getContent();
 		this.regularUser = p.getRegularUser().getId();
-		for (Comment comment : p.getComments()) {
-			CommentDTO commentDTO = new CommentDTO(comment);
-			this.comments.add(commentDTO);
+		if(p.getComments() != null) {
+			for (Comment comment : p.getComments()) {
+				CommentDTO commentDTO = new CommentDTO(comment);
+				this.comments.add(commentDTO);
+			}
+		} else {
+			this.comments = null;
 		}
-		for (Reaction reaction : p.getReactions()) {
-			ReactionDTO reactionDTO = new ReactionDTO(reaction);
-			this.reactions.add(reactionDTO);
+		
+		if(p.getReactions() != null) {
+			for (Reaction reaction : p.getReactions()) {
+				ReactionDTO reactionDTO = new ReactionDTO(reaction);
+				this.reactions.add(reactionDTO);
+			}
+		} else {
+			this.reactions = null;
 		}
 	}
 
