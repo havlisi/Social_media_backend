@@ -4,7 +4,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import com.example.demo.entities.User;
 
-public class UpdateUserEntityDTO {
+public class UpdateUserDTO {
 	
 	private Integer id;
 	
@@ -23,10 +23,10 @@ public class UpdateUserEntityDTO {
 	@Email(message = "Email is not valid.")
 	private String email;
 	
-	public UpdateUserEntityDTO() {
+	public UpdateUserDTO() {
 	}
 
-	public UpdateUserEntityDTO(User u) {
+	public UpdateUserDTO(User u) {
 		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();

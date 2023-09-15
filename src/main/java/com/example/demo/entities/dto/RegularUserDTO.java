@@ -1,6 +1,5 @@
 package com.example.demo.entities.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -8,7 +7,7 @@ import javax.validation.constraints.Size;
 import com.example.demo.entities.Post;
 import com.example.demo.entities.RegularUser;
 
-public class RegularUserEntityDTO {
+public class RegularUserDTO {
 	
 	private Integer id;
 	
@@ -42,12 +41,12 @@ public class RegularUserEntityDTO {
 	
 	private String role;
 	
-	private List<Post> posts;
+	private List<PostDTO> posts;
 	
-	public RegularUserEntityDTO() {
+	public RegularUserDTO() {
 	}
 
-	public RegularUserEntityDTO(RegularUser u, String confirmedPassword) {
+	public RegularUserDTO(RegularUser u, String confirmedPassword) {
 		this.id = u.getId();
 		this.firstName = u.getFirstName();
 		this.lastName = u.getLastName();
@@ -56,12 +55,26 @@ public class RegularUserEntityDTO {
 		this.confirmedPassword = confirmedPassword;
 		this.username = u.getUsername();
 		this.role = u.getRole();
-		List<Post> posts = new ArrayList<>();
 		for (Post post : u.getPosts()) {
-			posts.add(post);
+			PostDTO postDTO = new PostDTO(post);
+			this.posts.add(postDTO);
 		}
 	}
 
+	public RegularUserDTO(RegularUser u) {
+		this.id = u.getId();
+		this.firstName = u.getFirstName();
+		this.lastName = u.getLastName();
+		this.email = u.getEmail();
+		this.password = u.getPassword();
+		this.username = u.getUsername();
+		this.role = u.getRole();
+		for (Post post : u.getPosts()) {
+			PostDTO postDTO = new PostDTO(post);
+			this.posts.add(postDTO);
+		}
+	}
+	
 	public Integer getId() {
 		return id;
 	}
@@ -118,11 +131,11 @@ public class RegularUserEntityDTO {
 		this.role = role;
 	}
 
-	public List<Post> getPosts() {
+	public List<PostDTO> getPosts() {
 		return posts;
 	}
 
-	public void setPosts(List<Post> posts) {
+	public void setPosts(List<PostDTO> posts) {
 		this.posts = posts;
 	}
 

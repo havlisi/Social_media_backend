@@ -69,8 +69,10 @@ public class PostServiceImpl implements PostService {
 		return posts;
 
 	}
+	
+	//paginacija i na homepage i search
 
-	public ArrayList<Post> searchByTitle(String title) throws Exception {
+	public ArrayList<PostDTO> searchByTitle(String title) throws Exception {
 		
 		if (title == "") {
 			throw new TitleNullException("Please enter title");
@@ -82,11 +84,12 @@ public class PostServiceImpl implements PostService {
 			throw new PostNotFoundException("Posts not found");
 		}
 		
-		ArrayList<Post> filteredPosts = new ArrayList<>();
+		ArrayList<PostDTO> filteredPosts = new ArrayList<>();
 		
 		for (Post post : allPosts) {
+			PostDTO postDTO = new PostDTO(post);
 			if (post.getTitle().toLowerCase().contains(title.toLowerCase())){
-				filteredPosts.add(post);
+				filteredPosts.add(postDTO);
 			}
 		}
 		
