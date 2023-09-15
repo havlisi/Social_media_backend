@@ -173,7 +173,18 @@ public class PostServiceImpl implements PostService {
 				
 				Optional<Reaction> existingReaction = reactionRepository.findByPostAndRegularUser(post.get(), loggedUser);
 				
-				if (existingReaction.get().getReactionType() == null || existingReaction.get().getReactionType() == ReactionEnum.LIKE) {
+				if (existingReaction.isEmpty()) {
+					Reaction reaction = new Reaction();
+					reaction.setPost(post.get());
+					reaction.setRegularUser(loggedUser);
+					reaction.setReactionType(ReactionEnum.DISLIKE);
+
+					reactionRepository.save(reaction);
+					ArrayList<Reaction> postReactions = new ArrayList<>(post.get().getReactions());
+					postReactions.add(reaction);
+					postRepository.save(post.get());
+					
+				} else if (existingReaction.get().getReactionType() == null || existingReaction.get().getReactionType() == ReactionEnum.LIKE) {
 					existingReaction.get().setReactionType(ReactionEnum.DISLIKE);
 
 					reactionRepository.save(existingReaction.get());
@@ -185,18 +196,7 @@ public class PostServiceImpl implements PostService {
 					existingReaction.get().setReactionType(null);
 					reactionRepository.save(existingReaction.get());
 					postRepository.save(post.get());
-				} else {
-					// proveriti jel sad dobro - debag
-					Reaction reaction = new Reaction();
-					reaction.setPost(post.get());
-					reaction.setRegularUser(loggedUser);
-					reaction.setReactionType(ReactionEnum.DISLIKE);
-
-					reactionRepository.save(reaction);
-					ArrayList<Reaction> postReactions = new ArrayList<>(post.get().getReactions());
-					postReactions.add(reaction);
-					postRepository.save(post.get());
-				}
+				} 
 				
 				return new PostDTO(post.get());
 			}
