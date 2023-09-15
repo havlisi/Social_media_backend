@@ -1,5 +1,6 @@
 package com.example.demo.services.implementation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import com.example.demo.exceptions.PasswordConfirmationException;
 import com.example.demo.exceptions.UnauthorizedUserException;
 import com.example.demo.exceptions.UserWithEmailExistsException;
 import com.example.demo.exceptions.UserWithUsernameExistsException;
+import com.example.demo.exceptions.UsernameNullException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.FollowingRepository;
@@ -63,6 +65,32 @@ public class RegUserServiceImpl implements RegularUserService {
 		}
 		return user;
 	}
+	
+
+	public ArrayList<RegularUser> searchByUsername(String username) throws Exception {
+		
+		if (username == "") {
+			throw new UsernameNullException("Please enter username");
+		}
+		
+		ArrayList<RegularUser> allUsers = (ArrayList<RegularUser>) regularUserRepository.findAll();
+
+		if (allUsers.isEmpty()) {
+			throw new UserNotFoundException("User with that id not found");
+		}
+		
+		ArrayList<RegularUser> filteredUsers = new ArrayList<>();
+		
+		for (RegularUser user : allUsers) {
+			if (user.getUsername().contains(username)){
+				filteredUsers.add(user);
+			}
+		}
+		
+		return filteredUsers;
+		
+	}
+
 	
 	public UserEntityDTO create(RegularUserEntityDTO newUser) throws Exception {
 		
@@ -249,6 +277,5 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		throw new UserNotFoundException("User with that id not found");
 	}
-
 
 }
