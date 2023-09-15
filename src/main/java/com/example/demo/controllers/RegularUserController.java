@@ -53,6 +53,15 @@ public class RegularUserController {
 		}
 	}
 	
+	@GetMapping("/username/{username}")
+	public ResponseEntity<?> searchByUsername(@PathVariable String username) throws Exception {
+		try {
+			return new ResponseEntity<>(regUserServiceImpl.searchByUsername(username), HttpStatus.OK);
+		} catch (UserNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
+	
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody RegularUserEntityDTO newUser) throws Exception {
 		try {

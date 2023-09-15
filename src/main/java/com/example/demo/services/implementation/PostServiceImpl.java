@@ -203,5 +203,7 @@ public class PostServiceImpl implements PostService {
 			
 			throw new UnauthorizedUserException("User is not authorized to update this user");
 		}
+	 
+	// search by content ili title - deo reci ili celu rec da ukucam on treba da nadje ceo post koji to sadrzi
 	
 }
