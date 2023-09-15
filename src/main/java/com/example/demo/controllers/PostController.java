@@ -1,6 +1,5 @@
 package com.example.demo.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -12,28 +11,28 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.example.demo.entities.dto.CommentDTO;
 import com.example.demo.entities.dto.PostDTO;
 import com.example.demo.exceptions.PostNotFoundException;
 import com.example.demo.exceptions.UnauthorizedUserException;
 import com.example.demo.exceptions.UserNotFoundException;
-import com.example.demo.repositories.UserRepository;
-import com.example.demo.services.implementation.PostServiceImpl;
+import com.example.demo.services.PostService;
 
 @RestController
 @RequestMapping(path = "api/v1/posts")
 public class PostController {
-	
-	@Autowired
-	UserRepository userRepository;
 
-	@Autowired
-	private PostServiceImpl postServiceImpl;
+	private final PostService postService;
 	
+	public PostController(PostService postService) {
+		this.postService = postService;
+	}
+
 	@GetMapping
 	public ResponseEntity<?> getAll() throws Exception {
 		try {
-			return new ResponseEntity<>(postServiceImpl.getAll(), HttpStatus.OK);
+			return new ResponseEntity<>(postService.getAll(), HttpStatus.OK);
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -43,7 +42,7 @@ public class PostController {
 	@GetMapping("/homepage")
 	public ResponseEntity<?> getAllForHomePage(Authentication authentication) throws Exception {
 		try {
-			return new ResponseEntity<>(postServiceImpl.getAllForHomePage(authentication.getName()), HttpStatus.OK);
+			return new ResponseEntity<>(postService.getAllForHomePage(authentication.getName()), HttpStatus.OK);
 		} catch (PostNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		} catch (UserNotFoundException e) {
@@ -54,7 +53,7 @@ public class PostController {
 	@GetMapping("/title/{title}")
 	public ResponseEntity<?> searchByTitle(@PathVariable String title) throws Exception {
 		try {
-			return new ResponseEntity<>(postServiceImpl.searchByTitle(title), HttpStatus.OK);
+			return new ResponseEntity<>(postService.searchByTitle(title), HttpStatus.OK);
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -64,7 +63,7 @@ public class PostController {
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody PostDTO newPost, Authentication authentication) throws Exception {
 		try {
-			return new ResponseEntity<>(postServiceImpl.create(newPost, authentication.getName()), HttpStatus.CREATED);
+			return new ResponseEntity<>(postService.create(newPost, authentication.getName()), HttpStatus.CREATED);
 		} catch (UnauthorizedUserException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
@@ -74,7 +73,7 @@ public class PostController {
 	@PutMapping("/{id}")
 	public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestBody CommentDTO newComment, Authentication authentication) throws Exception {
 		try {
-			return new ResponseEntity<>(postServiceImpl.addComment(id, newComment, authentication.getName()), HttpStatus.CREATED);
+			return new ResponseEntity<>(postService.addComment(id, newComment, authentication.getName()), HttpStatus.CREATED);
 		} catch (UnauthorizedUserException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
@@ -84,7 +83,7 @@ public class PostController {
 	@PutMapping("/like/{id}")
 	public ResponseEntity<?> addLikeReaction(@PathVariable Integer id, Authentication authentication) throws Exception {
 		try {
-			return new ResponseEntity<>(postServiceImpl.addLikeReaction(id, authentication.getName()), HttpStatus.CREATED);
+			return new ResponseEntity<>(postService.addLikeReaction(id, authentication.getName()), HttpStatus.CREATED);
 		} catch (UnauthorizedUserException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
@@ -94,7 +93,7 @@ public class PostController {
 	@PutMapping("/dislike/{id}")
 	public ResponseEntity<?> addDislikeReaction(@PathVariable Integer id, Authentication authentication) throws Exception {
 		try {
-			return new ResponseEntity<>(postServiceImpl.addDislikeReaction(id, authentication.getName()), HttpStatus.CREATED);
+			return new ResponseEntity<>(postService.addDislikeReaction(id, authentication.getName()), HttpStatus.CREATED);
 		} catch (UnauthorizedUserException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}

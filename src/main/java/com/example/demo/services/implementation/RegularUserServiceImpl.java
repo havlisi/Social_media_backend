@@ -27,29 +27,37 @@ import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.FollowingRepository;
 import com.example.demo.repositories.RegularUserRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.services.EmailService;
 import com.example.demo.services.RegularUserService;
 
 @Service
-public class RegUserServiceImpl implements RegularUserService {
+public class RegularUserServiceImpl implements RegularUserService {
 	
-	@Autowired
-	RegularUserRepository regularUserRepository;
+	private final RegularUserRepository regularUserRepository;
 	
-	@Autowired
-	UserRepository userRepository;
+	private final UserRepository userRepository;
 	
-	@Autowired
-	AdminRepository adminRepository;
+	private final AdminRepository adminRepository;
 	
-	@Autowired
-	EmailServiceImpl emailServiceImpl;
+	private final EmailService emailService;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 	
-	@Autowired
-	FollowingRepository followingRepository;
+	private final FollowingRepository followingRepository;
 	
+	
+	public RegularUserServiceImpl(RegularUserRepository regularUserRepository, UserRepository userRepository,
+			AdminRepository adminRepository, EmailService emailService, PasswordEncoder passwordEncoder,
+			FollowingRepository followingRepository) {
+		this.regularUserRepository = regularUserRepository;
+		this.userRepository = userRepository;
+		this.adminRepository = adminRepository;
+		this.emailService = emailService;
+		this.passwordEncoder = passwordEncoder;
+		this.followingRepository = followingRepository;
+	}
+
+
 	public List<RegularUser> getAll() throws Exception {
 		List<RegularUser> users = (List<RegularUser>) regularUserRepository.findAll();
 		if (users.isEmpty()) {
@@ -58,6 +66,8 @@ public class RegUserServiceImpl implements RegularUserService {
 		return users;
 	}
 	
+	
+	//dodaj override
 	public Optional<RegularUser> getById(Integer id) throws Exception {
 		Optional<RegularUser> user = regularUserRepository.findById(id);
 		if (user.isEmpty()) {
@@ -68,7 +78,6 @@ public class RegUserServiceImpl implements RegularUserService {
 	
 
 	public ArrayList<RegularUserDTO> searchByUsername(String username) throws Exception {
-		
 		if (username == "") {
 			throw new UsernameNullException("Please enter username");
 		}
@@ -81,6 +90,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		
 		ArrayList<RegularUserDTO> filteredUsers = new ArrayList<>();
 		
+		//sredi if-ove
 		for (RegularUser user : allUsers) {
 			RegularUserDTO userDTO = new RegularUserDTO(user);
 			if (user.getUsername().contains(username.toLowerCase())){
@@ -128,7 +138,7 @@ public class RegUserServiceImpl implements RegularUserService {
 	}
 	
 	public UpdateUserDTO update(UpdateUserDTO updatedUser, String name) throws Exception {
-		
+		//sredi if-ove
 		User loggedUser = userRepository.findByEmail(name);
 		
 		RegularUser regularUser = (RegularUser) loggedUser;
@@ -262,7 +272,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			String newPass = "password123";
 			admin.setPassword((passwordEncoder.encode(newPass)));
 			adminRepository.save(admin);
-			emailServiceImpl.sendNewMail("isidorahavlovic@gmail.com", newPass);
+			emailService.sendNewMail("isidorahavlovic@gmail.com", newPass);
 			return "New password has been sent to admin";
 		}
 		else if(loggedUser.getRole().equals("ROLE_REGULAR_USER")) {
@@ -270,7 +280,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			String newPass = "password321";
 			regUser.setPassword((passwordEncoder.encode(newPass)));
 			userRepository.save(regUser);
-			emailServiceImpl.sendNewMail("isidorahavlovic@gmail.com", newPass);
+			emailService.sendNewMail("isidorahavlovic@gmail.com", newPass);
 			return "New password has been sent to regular user";
 		}
 		

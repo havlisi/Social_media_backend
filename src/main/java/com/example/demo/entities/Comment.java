@@ -26,6 +26,7 @@ public class Comment {
 	
 	private String comment;
 
+	//ne treba jsonignore
 	@JsonIgnore
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "regularUser")
