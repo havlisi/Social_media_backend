@@ -10,8 +10,8 @@ import com.example.demo.entities.Admin;
 import com.example.demo.entities.Following;
 import com.example.demo.entities.RegularUser;
 import com.example.demo.entities.User;
-import com.example.demo.entities.dto.RegularUserEntityDTO;
-import com.example.demo.entities.dto.UpdateUserEntityDTO;
+import com.example.demo.entities.dto.RegularUserDTO;
+import com.example.demo.entities.dto.UpdateUserDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.entities.dto.UserEntityDTO;
 import com.example.demo.exceptions.CantFollowSelfException;
@@ -67,7 +67,7 @@ public class RegUserServiceImpl implements RegularUserService {
 	}
 	
 
-	public ArrayList<RegularUser> searchByUsername(String username) throws Exception {
+	public ArrayList<RegularUserDTO> searchByUsername(String username) throws Exception {
 		
 		if (username == "") {
 			throw new UsernameNullException("Please enter username");
@@ -79,19 +79,19 @@ public class RegUserServiceImpl implements RegularUserService {
 			throw new UserNotFoundException("Users not found");
 		}
 		
-		ArrayList<RegularUser> filteredUsers = new ArrayList<>();
+		ArrayList<RegularUserDTO> filteredUsers = new ArrayList<>();
 		
 		for (RegularUser user : allUsers) {
+			RegularUserDTO userDTO = new RegularUserDTO(user);
 			if (user.getUsername().contains(username.toLowerCase())){
-				filteredUsers.add(user);
+				filteredUsers.add(userDTO);
 			}
 		}
-		
 		return filteredUsers;
 	}
 
 	
-	public UserEntityDTO create(RegularUserEntityDTO newUser) throws Exception {
+	public UserEntityDTO create(RegularUserDTO newUser) throws Exception {
 		
 		RegularUser user = new RegularUser();
 		
@@ -127,7 +127,7 @@ public class RegUserServiceImpl implements RegularUserService {
 		return new UserEntityDTO(user, newUser.getConfirmedPassword());
 	}
 	
-	public UpdateUserEntityDTO update(UpdateUserEntityDTO updatedUser, String name) throws Exception {
+	public UpdateUserDTO update(UpdateUserDTO updatedUser, String name) throws Exception {
 		
 		User loggedUser = userRepository.findByEmail(name);
 		
@@ -167,7 +167,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			userRepository.save(regularUser);
 			
-			return new UpdateUserEntityDTO(regularUser);
+			return new UpdateUserDTO(regularUser);
 		} else if(loggedUser.getRole().equals("ROLE_ADMIN")) {
 
 			if (updatedUser.getFirstName() != null) {
@@ -204,7 +204,7 @@ public class RegUserServiceImpl implements RegularUserService {
 			
 			userRepository.save(admin);
 			
-			return new UpdateUserEntityDTO(admin);
+			return new UpdateUserDTO(admin);
 		}
 		
 		

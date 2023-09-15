@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.entities.dto.RegularUserEntityDTO;
-import com.example.demo.entities.dto.UpdateUserEntityDTO;
+import com.example.demo.entities.dto.RegularUserDTO;
+import com.example.demo.entities.dto.UpdateUserDTO;
 import com.example.demo.entities.dto.UserEmailDTO;
 import com.example.demo.exceptions.CantFollowSelfException;
 import com.example.demo.exceptions.FollowingExistsException;
@@ -63,7 +63,7 @@ public class RegularUserController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> create(@Valid @RequestBody RegularUserEntityDTO newUser) throws Exception {
+	public ResponseEntity<?> create(@Valid @RequestBody RegularUserDTO newUser) throws Exception {
 		try {
 			return new ResponseEntity<>(regUserServiceImpl.create(newUser), HttpStatus.CREATED);
 		} catch (UserWithEmailExistsException e) {
@@ -77,7 +77,7 @@ public class RegularUserController {
 	
 	@Secured({"ROLE_ADMIN", "ROLE_REGULAR_USER"})
 	@PutMapping
-	public ResponseEntity<?> update(@Valid @RequestBody UpdateUserEntityDTO updatedUser, Authentication authentication) throws Exception {
+	public ResponseEntity<?> update(@Valid @RequestBody UpdateUserDTO updatedUser, Authentication authentication) throws Exception {
 		try {
 			return new ResponseEntity<>(regUserServiceImpl.update(updatedUser, authentication.getName()), HttpStatus.OK);
 		} catch (UserWithEmailExistsException e) {

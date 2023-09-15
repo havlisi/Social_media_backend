@@ -13,9 +13,9 @@ public class PostDTO {
 	
 	private String content;
 	
-	private List<Comment> comments;
+	private List<CommentDTO> comments;
 	
-	private List<Reaction> reactions;
+	private List<ReactionDTO> reactions;
 	
 	private Integer regularUser;
 
@@ -29,8 +29,25 @@ public class PostDTO {
 		this.title = p.getTitle();
 		this.content = p.getContent();
 		this.regularUser = p.getRegularUser().getId();
-		this.comments = p.getComments();
-		this.reactions = p.getReactions();
+		for (Comment comment : p.getComments()) {
+			CommentDTO commentDTO = new CommentDTO(comment);
+			this.comments.add(commentDTO);
+		}
+		for (Reaction reaction : p.getReactions()) {
+			ReactionDTO reactionDTO = new ReactionDTO(reaction);
+			this.reactions.add(reactionDTO);
+		}
+	}
+
+	public PostDTO(Integer id, String title, String content, List<CommentDTO> comments, List<ReactionDTO> reactions,
+			Integer regularUser) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.content = content;
+		this.comments = comments;
+		this.reactions = reactions;
+		this.regularUser = regularUser;
 	}
 
 	public Integer getId() {
@@ -56,14 +73,6 @@ public class PostDTO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-
-	public List<Comment> getComments() {
-		return comments;
-	}
-
-	public void setComments(List<Comment> comments) {
-		this.comments = comments;
-	}
 	
 	public Integer getRegularUser() {
 		return regularUser;
@@ -73,11 +82,19 @@ public class PostDTO {
 		this.regularUser = regularUser;
 	}
 
-	public List<Reaction> getReactions() {
+	public List<CommentDTO> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<CommentDTO> comments) {
+		this.comments = comments;
+	}
+
+	public List<ReactionDTO> getReactions() {
 		return reactions;
 	}
 
-	public void setReactions(List<Reaction> reactions) {
+	public void setReactions(List<ReactionDTO> reactions) {
 		this.reactions = reactions;
 	}
 
