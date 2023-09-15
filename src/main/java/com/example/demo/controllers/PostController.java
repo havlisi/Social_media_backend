@@ -51,6 +51,15 @@ public class PostController {
 		}
 	}
 	
+	@GetMapping("/title/{title}")
+	public ResponseEntity<?> searchByTitle(@PathVariable String title) throws Exception {
+		try {
+			return new ResponseEntity<>(postServiceImpl.searchByTitle(title), HttpStatus.OK);
+		} catch (UserNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
+	
 	@Secured("ROLE_REGULAR_USER")
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody PostDTO newPost, Authentication authentication) throws Exception {

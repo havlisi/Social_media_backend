@@ -14,6 +14,7 @@ import com.example.demo.entities.RegularUser;
 import com.example.demo.entities.dto.CommentDTO;
 import com.example.demo.entities.dto.PostDTO;
 import com.example.demo.exceptions.PostNotFoundException;
+import com.example.demo.exceptions.TitleNullException;
 import com.example.demo.exceptions.UnauthorizedUserException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.repositories.CommentRepository;
@@ -67,6 +68,29 @@ public class PostServiceImpl implements PostService {
 		
 		return posts;
 
+	}
+
+	public ArrayList<Post> searchByTitle(String title) throws Exception {
+		
+		if (title == "") {
+			throw new TitleNullException("Please enter title");
+		}
+		
+		ArrayList<Post> allPosts = (ArrayList<Post>) postRepository.findAll();
+
+		if (allPosts.isEmpty()) {
+			throw new PostNotFoundException("Posts not found");
+		}
+		
+		ArrayList<Post> filteredPosts = new ArrayList<>();
+		
+		for (Post post : allPosts) {
+			if (post.getTitle().toLowerCase().contains(title.toLowerCase())){
+				filteredPosts.add(post);
+			}
+		}
+		
+		return filteredPosts;
 	}
 	
 	public PostDTO create(PostDTO newPost, String name) throws Exception {
@@ -203,7 +227,5 @@ public class PostServiceImpl implements PostService {
 			
 			throw new UnauthorizedUserException("User is not authorized to update this user");
 		}
-	 
-	// search by content ili title - deo reci ili celu rec da ukucam on treba da nadje ceo post koji to sadrzi
 	
 }

@@ -76,19 +76,18 @@ public class RegUserServiceImpl implements RegularUserService {
 		ArrayList<RegularUser> allUsers = (ArrayList<RegularUser>) regularUserRepository.findAll();
 
 		if (allUsers.isEmpty()) {
-			throw new UserNotFoundException("User with that id not found");
+			throw new UserNotFoundException("Users not found");
 		}
 		
 		ArrayList<RegularUser> filteredUsers = new ArrayList<>();
 		
 		for (RegularUser user : allUsers) {
-			if (user.getUsername().contains(username)){
+			if (user.getUsername().contains(username.toLowerCase())){
 				filteredUsers.add(user);
 			}
 		}
 		
 		return filteredUsers;
-		
 	}
 
 	
